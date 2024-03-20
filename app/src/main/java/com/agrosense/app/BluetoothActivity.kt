@@ -95,13 +95,16 @@ class BluetoothActivity : AppCompatActivity() {
                 BluetoothDevice.ACTION_FOUND ->{
                     Log.d(TAG, "discoverDevices: ACTION FOUND.")
                     val device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
-                    devices + device
+
 
                     if (ActivityCompat.checkSelfPermission(rootContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                         return
                     }
-                    if(device != null)
+                    if(device != null){
                         Log.d(TAG, "discoverDevices: Found device:" + device.name + " " + device.address)
+                        devices.add(device)
+                    }
+
 
                     Log.d(TAG, "discoverDevices: device list: $devices")
                     refreshAdapter()
@@ -137,7 +140,7 @@ class BluetoothActivity : AppCompatActivity() {
 
     companion object{
         private const val TAG: String = "BluetoothActivity"
-        private val devices: List<BluetoothDevice> =  ArrayList()
+        private val devices: ArrayList<BluetoothDevice> =  ArrayList()
         private  val toggleBluetoothReceiver =  object : BroadcastReceiver(){
 
             override fun onReceive(context: Context?, intent: Intent?) {
