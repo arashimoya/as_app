@@ -70,10 +70,13 @@ public class BluetoothState {
     public void toggleDiscover(Activity activity, BroadcastReceiver discoverReceiver) {
         if (ActivityCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "toggleDiscover: PERMISSION DENIED.");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 ActivityCompat.requestPermissions((Activity) activity, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
                 return;
-            }
+        }
+        if (ActivityCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "toggleDiscover: PERMISSION DENIED.");
+            ActivityCompat.requestPermissions((Activity) activity, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 2);
+            return;
         }
         Log.d(TAG, "toggleDiscover: Looking for unpaired devices.");
 
