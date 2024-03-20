@@ -24,6 +24,13 @@ public class BluetoothState {
     }
 
     public void enableBluetooth(Context context, BroadcastReceiver toggleBluetoothReceiver) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "toggleBluetooth: PERMISSION DENIED.");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.BLUETOOTH}, 2);
+                return;
+            }
+        }
         if (adapter!= null && !adapter.isEnabled()) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "toggleBluetooth: PERMISSION DENIED.");
@@ -68,15 +75,19 @@ public class BluetoothState {
     }
 
     public void toggleDiscover(Activity activity, BroadcastReceiver discoverReceiver) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         if (ActivityCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "toggleDiscover: PERMISSION DENIED.");
-                ActivityCompat.requestPermissions((Activity) activity, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
                 return;
         }
         if (ActivityCompat.checkSelfPermission(activity.getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "toggleDiscover: PERMISSION DENIED.");
-            ActivityCompat.requestPermissions((Activity) activity, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 2);
+
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 2);
+
             return;
+        }
         }
         Log.d(TAG, "toggleDiscover: Looking for unpaired devices.");
 

@@ -1,7 +1,6 @@
 package com.agrosense.app
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -18,6 +17,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agrosense.app.bluetooth.BluetoothClient
 import com.agrosense.app.bluetooth.BluetoothState
@@ -29,6 +29,7 @@ class BluetoothActivity : AppCompatActivity() {
     private val bluetoothState = BluetoothState()
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: DeviceAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +41,7 @@ class BluetoothActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.devices)
 
         val filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
-        registerReceiver(bondReceiver(this), filter)
+        registerReceiver(bondReceiver(), filter)
 
         val btSwitch = findViewById<SwitchMaterial>(R.id.btnONOFF)
         val discover = findViewById<Button>(R.id.btnFindUnpairedDevices)
@@ -55,7 +56,7 @@ class BluetoothActivity : AppCompatActivity() {
                 bluetoothState.disableBluetooth(this, toggleBluetoothReceiver)
         }
         discover.setOnClickListener {
-            bluetoothState.toggleDiscover(this, discoverDevices(applicationContext))
+            bluetoothState.toggleDiscover(this, discoverDevices())
         }
 
         button.setOnClickListener {
@@ -63,14 +64,17 @@ class BluetoothActivity : AppCompatActivity() {
             bluetoothClient.sendRequest(message)
         }
 
-        refreshAdapter()
+        adapter = DeviceAdapter(devices, ::connect)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun refreshAdapter() {
 
-        recyclerView.adapter = DeviceAdapter(devices, ::connect)
-        recyclerView.adapter!!.notifyDataSetChanged()
+    private fun refreshAdapter(device: BluetoothDevice) {
+        if(!devices.contains(device)){
+            devices.add(device)
+            recyclerView.adapter?.notifyItemInserted(devices.indexOf(device))
+        }
     }
 
     private fun connect(device: BluetoothDevice) {
@@ -86,27 +90,19 @@ class BluetoothActivity : AppCompatActivity() {
 
     }
 
-    private fun discoverDevices(rootContext: Context) = object : BroadcastReceiver() {
+    private fun discoverDevices() = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         override fun onReceive(context: Context?, intent: Intent?) {
 
             when (intent?.action) {
                 BluetoothDevice.ACTION_FOUND -> {
                     Log.d(TAG, "discoverDevices: ACTION FOUND.")
-                    val device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                    val device = intent.extras?.get(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice
 
-
-                    if (ActivityCompat.checkSelfPermission(rootContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                        return
-                    }
-                    if (device != null) {
-                        Log.d(TAG, "discoverDevices: Found device:" + device.name + " " + device.address)
-                        devices.add(device)
-                    }
-
+                    Log.d(TAG, "discoverDevices: Found device:" + device.name + " " + device.address)
 
                     Log.d(TAG, "discoverDevices: device list: $devices")
-                    refreshAdapter()
+                    refreshAdapter(device)
 
                 }
 
@@ -115,16 +111,13 @@ class BluetoothActivity : AppCompatActivity() {
 
     }
 
-    private fun bondReceiver(rootContext: Context) = object : BroadcastReceiver() {
+    private fun bondReceiver() = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (ActivityCompat.checkSelfPermission(rootContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "onReceive: PERMISSION DENIED.")
-                return
-            }
+
             when (intent?.action) {
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                    when (intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)?.bondState) {
+                    when ((intent.extras?.get(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice).bondState) {
                         BluetoothDevice.BOND_BONDED -> Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")
                         BluetoothDevice.BOND_BONDING -> Log.d(TAG, "BroadcastReceiver: BOND_BONDING.")
                         BluetoothDevice.BOND_NONE -> Log.d(TAG, "BroadcastReceiver: BOND_NONE.")

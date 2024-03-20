@@ -12,8 +12,8 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class DeviceAdapter(
-        private val data: List<BluetoothDevice>,
-        private val onItemClick: (BluetoothDevice)-> Unit)
+    private var data: List<BluetoothDevice>,
+    private val onItemClick: (BluetoothDevice)-> Unit)
     : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
     class ViewHolder(view: View, onItemClicked: (Int)-> Unit) : RecyclerView.ViewHolder(view) {
@@ -27,10 +27,6 @@ class DeviceAdapter(
         }
 
         fun bind(model: BluetoothDevice) {
-            if (ActivityCompat.checkSelfPermission(itemView.context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                Log.d("DeviceAdapter", "bind: No permission to check the device name")
-                return
-            }
             deviceNameText.text = model.name ?: "Unknown Device"
         }
     }
