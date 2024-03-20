@@ -54,7 +54,7 @@ class BluetoothActivity : AppCompatActivity() {
                 bluetoothState.disableBluetooth(this, toggleBluetoothReceiver)
         }
         discover.setOnClickListener{
-            bluetoothState.toggleDiscover(this, discoverDevices())
+            bluetoothState.toggleDiscover(this, discoverDevices(applicationContext))
         }
 
         button.setOnClickListener{
@@ -87,7 +87,7 @@ class BluetoothActivity : AppCompatActivity() {
 
     }
 
-    private fun discoverDevices() = object: BroadcastReceiver(){
+    private fun discoverDevices(rootContext: Context) = object: BroadcastReceiver(){
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         override fun onReceive(context: Context?, intent: Intent?) {
 
@@ -96,6 +96,12 @@ class BluetoothActivity : AppCompatActivity() {
                     Log.d(TAG, "discoverDevices: ACTION FOUND.")
                     val device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
                     devices + device
+
+                    if (ActivityCompat.checkSelfPermission(rootContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        return
+                    }
+                    if(device != null)
+                        Log.d(TAG, "discoverDevices: Found device:" + device.name + " " + device.address)
 
                     refreshAdapter()
 
