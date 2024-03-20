@@ -103,6 +103,7 @@ class BluetoothActivity : AppCompatActivity() {
                     if(device != null)
                         Log.d(TAG, "discoverDevices: Found device:" + device.name + " " + device.address)
 
+                    Log.d(TAG, "discoverDevices: device list: $devices")
                     refreshAdapter()
 
                 }
