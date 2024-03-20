@@ -66,12 +66,7 @@ class BluetoothActivity : AppCompatActivity() {
     }
 
     private fun refreshAdapter(){
-        recyclerView.adapter = DeviceAdapter(devices){device ->
-            run {
-                connect(device)
-            }
-        }
-
+        recyclerView.adapter = DeviceAdapter(devices){device -> connect(device) }
     }
 
     private fun connect(device: BluetoothDevice){
