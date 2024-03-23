@@ -15,24 +15,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="?android:attr/homeAsUpIndicator" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/btnONOFF"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ON/OFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnFindUnpairedDevices"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarBTA" />
-
-
-    <Button
-        android:id="@+id/btnFindUnpairedDevices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:text="Discover"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarBTA" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/devices"
@@ -41,7 +23,7 @@
         app:layout_constraintBottom_toTopOf="@id/bt_linear_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnONOFF"
+        app:layout_constraintTop_toBottomOf="@id/toolbarBTA"
         tools:listitem="@layout/device_item" />
 
     <LinearLayout
