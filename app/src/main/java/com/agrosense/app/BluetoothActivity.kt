@@ -169,7 +169,7 @@ class BluetoothActivity : AppCompatActivity() {
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
         private val socket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
             bluetoothAdapter.enable()
-            device.createRfcommSocketToServiceRecord(MY_UUID)
+            device.createRfcommSocketToServiceRecord(device.uuids[0].uuid)
         }
 
         override fun run() {
