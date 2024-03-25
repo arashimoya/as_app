@@ -31,6 +31,7 @@ import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.UUID
 
+
 val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
     arrayOf(
         Manifest.permission.BLUETOOTH_CONNECT,
@@ -168,8 +169,11 @@ class BluetoothActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
         private val socket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            bluetoothAdapter.enable()
-            device.createRfcommSocketToServiceRecord(device.uuids[0].uuid)
+            if(!bluetoothAdapter.isEnabled){
+                bluetoothAdapter.enable()
+            }
+            bluetoothAdapter.cancelDiscovery()
+            device.createRfcommSocketToServiceRecord(MY_UUID)
         }
 
         override fun run() {
