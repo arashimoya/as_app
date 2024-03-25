@@ -168,6 +168,7 @@ class BluetoothActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
         private val socket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
+            bluetoothAdapter.enable()
             device.createRfcommSocketToServiceRecord(MY_UUID)
         }
 
