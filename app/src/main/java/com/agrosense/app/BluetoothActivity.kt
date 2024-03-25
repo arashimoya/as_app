@@ -115,6 +115,8 @@ class BluetoothActivity : AppCompatActivity() {
         }
         Log.d(TAG, "connect: Trying to pair with " + device.name)
 
+        device.createBond()
+
         connectThread = ConnectThread(device)
         connectThread?.start()
 
