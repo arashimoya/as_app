@@ -1,6 +1,6 @@
 package com.agrosense.app.parser
 
-import com.agrosense.app.domain.TemperatureMessage
+import com.agrosense.app.domain.message.TemperatureMessage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

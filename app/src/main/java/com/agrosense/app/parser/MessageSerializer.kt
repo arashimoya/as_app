@@ -1,8 +1,11 @@
 package com.agrosense.app.parser
 
-import com.agrosense.app.domain.TemperatureMessage
+import com.agrosense.app.domain.message.TemperatureMessage
 
 class MessageSerializer {
+
+
+
     private val buffer: StringBuilder = StringBuilder()
 
     fun process(message: String): List<TemperatureMessage> {
@@ -27,7 +30,7 @@ class MessageSerializer {
         return mutableList
     }
 
-    private fun parse(message: String): TemperatureMessage{
+    private fun parse(message: String): TemperatureMessage {
         val temperature = message.substring(TEMPERATURE_START, TEMPERATURE_END).toDouble()
         val timestamp = message.substring(TIMESTAMP_START, TIMESTAMP_END).toLong()
         return TemperatureMessage(temperature, timestamp)
