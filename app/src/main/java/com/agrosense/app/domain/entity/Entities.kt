@@ -12,7 +12,9 @@ data class Measurement(
     @PrimaryKey val measurementId: Long,
     val name: String,
     val start: DateTime,
-    val end: DateTime
+    val end: DateTime,
+    val maxValue: Double,
+    val minValue: Double,
 )
 
 @Entity(tableName = "reading")
