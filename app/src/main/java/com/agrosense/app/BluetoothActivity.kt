@@ -144,7 +144,11 @@ class BluetoothActivity : AppCompatActivity() {
             when (intent?.action) {
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
                     when ((intent.extras?.get(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice).bondState) {
-                        BluetoothDevice.BOND_BONDED -> Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")
+                        BluetoothDevice.BOND_BONDED -> {
+                            Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")
+                            switchToFragment()
+                        }
+
                         BluetoothDevice.BOND_BONDING -> Log.d(
                             TAG,
                             "BroadcastReceiver: BOND_BONDING."
@@ -159,6 +163,14 @@ class BluetoothActivity : AppCompatActivity() {
 
     }
 
+    private fun switchToFragment() {
+        val newFragment = MeasurementFragment()
+        val transaction = supportFragmentManager.beginTransaction()
+
+        transaction.replace(R.id.fragment_container, newFragment)
+        transaction.commit()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -171,7 +183,7 @@ class BluetoothActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
         private val socket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            if(!bluetoothAdapter.isEnabled){
+            if (!bluetoothAdapter.isEnabled) {
                 bluetoothAdapter.enable()
             }
             bluetoothAdapter.cancelDiscovery()
