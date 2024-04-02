@@ -21,12 +21,16 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agrosense.app.bluetooth.BluetoothService
 import com.agrosense.app.bluetooth.MESSAGE_READ
 import com.agrosense.app.bluetooth.MESSAGE_TOAST
 import com.agrosense.app.bluetooth.MESSAGE_WRITE
+import com.agrosense.app.domain.entity.Measurement
+import com.agrosense.app.dsl.db.AgroSenseDatabase
+import org.joda.time.DateTime
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.UUID
@@ -52,6 +56,7 @@ class BluetoothActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DeviceAdapter
     private lateinit var bluetoothService: BluetoothService
+    private lateinit var measurementViewModel: MeasurementViewModel
     private var connectThread: ConnectThread? = null
 
 
@@ -68,6 +73,8 @@ class BluetoothActivity : AppCompatActivity() {
         }
 
         bluetoothService = BluetoothService(handler)
+        val factory = MeasurementViewModelFactory(AgroSenseDatabase.getDatabase(this).measurementDao())
+        measurementViewModel = ViewModelProvider(this, factory)[MeasurementViewModel::class.java]
 
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
         bluetoothAdapter = bluetoothManager.adapter
@@ -144,7 +151,11 @@ class BluetoothActivity : AppCompatActivity() {
             when (intent?.action) {
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
                     when ((intent.extras?.get(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice).bondState) {
-                        BluetoothDevice.BOND_BONDED -> Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")
+                        BluetoothDevice.BOND_BONDED -> {
+                            val measurement = Measurement(null, "Temperature", DateTime.now(), null, 30.0, 20.0)
+                            bluetoothService.write("1".toByteArray())
+                            measurementViewModel.insertMeasurement(measurement)
+                            Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")}
                         BluetoothDevice.BOND_BONDING -> Log.d(
                             TAG,
                             "BroadcastReceiver: BOND_BONDING."

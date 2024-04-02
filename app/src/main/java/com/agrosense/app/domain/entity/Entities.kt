@@ -9,17 +9,17 @@ import org.joda.time.DateTime
 
 @Entity(tableName = "measurement")
 data class Measurement(
-    @PrimaryKey val measurementId: Long,
+    @PrimaryKey(autoGenerate = true) val measurementId: Long?,
     val name: String,
     val start: DateTime,
-    val end: DateTime,
+    val end: DateTime?,
     val maxValue: Double,
     val minValue: Double,
 )
 
 @Entity(tableName = "reading")
 data class TemperatureReading(
-    @PrimaryKey val temperatureReadingId: Long,
+    @PrimaryKey(autoGenerate = true) val temperatureReadingId: Long?,
     val value: Double,
     @ColumnInfo(name = "recordedAt") val recordedAt: DateTime,
     val measurementParentId: Long
