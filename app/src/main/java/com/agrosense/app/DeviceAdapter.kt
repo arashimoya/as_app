@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class DeviceAdapter(
-    private var data: List<BluetoothDevice>,
+    var data: List<BluetoothDevice>,
     private val onItemClick: (BluetoothDevice)-> Unit)
     : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
@@ -46,6 +46,12 @@ class DeviceAdapter(
             Log.d("DeviceAdapter", "onBindViewHolder: " + data[position].name)
         }
 
+    }
+
+    fun updateDataSet(devices: List<BluetoothDevice>){
+        val oldData = data
+        data + devices
+        notifyItemRangeInserted(oldData.size-1, devices.size)
     }
 
 

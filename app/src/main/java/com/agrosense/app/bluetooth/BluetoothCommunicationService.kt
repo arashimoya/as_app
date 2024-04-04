@@ -13,7 +13,7 @@ const val MESSAGE_READ: Int = 0
 const val MESSAGE_WRITE: Int = 1
 const val MESSAGE_TOAST: Int = 2
 
-class BluetoothService(private val handler: Handler) {
+class BluetoothCommunicationService(private val handler: Handler) {
 
     private var connectedThread: ConnectedThread? = null
 
