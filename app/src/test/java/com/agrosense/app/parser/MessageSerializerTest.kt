@@ -97,6 +97,17 @@ class MessageSerializerTest {
         assertEquals(listOf(TemperatureMessage(TEMPERATURE, NOW), TemperatureMessage(TEMPERATURE2, NOW2)), result2)
     }
 
+    @Test
+    fun should_return_a_list_of_one_given_shorter_timestamp_than_usual(){
+        val message1 = SHORTER
+
+        val result = serializer.process(message1)
+
+        assertFalse(result.isEmpty())
+        assertEquals(1,result.size)
+        assertEquals(listOf(TemperatureMessage(28.5, 1234)),result)
+    }
+
     companion object {
         private const val NOW: Long = 1711808586
         private const val TEMPERATURE: Double = 28.5
@@ -112,6 +123,8 @@ class MessageSerializerTest {
 
         private const val SPLIT2_1 = "{28.5"
         private const val SPLIT2_2 = ", 1711808586}{30.5, 1711808820}"
+
+        private const val SHORTER = "{28.5, 1234}"
 
 
     }

@@ -9,7 +9,7 @@ class MessageSerializer {
     private val buffer: StringBuilder = StringBuilder()
 
     fun process(message: String): List<TemperatureMessage> {
-        buffer.append(message)
+        buffer.append(message.trim())
         val list = findCompleteMessages()
         return list.map {parse(it) }
     }
@@ -32,7 +32,7 @@ class MessageSerializer {
 
     private fun parse(message: String): TemperatureMessage {
         val temperature = message.substring(TEMPERATURE_START, TEMPERATURE_END).toDouble()
-        val timestamp = message.substring(TIMESTAMP_START, TIMESTAMP_END).toLong()
+        val timestamp = message.substring(TIMESTAMP_START, message.indexOf(END_BRACKET)).toLong()
         return TemperatureMessage(temperature, timestamp)
     }
 
@@ -43,7 +43,6 @@ class MessageSerializer {
         private const val TEMPERATURE_START = 1
         private const val TEMPERATURE_END = 5
         private const val TIMESTAMP_START = 7
-        private const val TIMESTAMP_END = 17
     }
 
 }
