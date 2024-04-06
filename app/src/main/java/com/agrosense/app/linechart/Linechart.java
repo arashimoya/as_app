@@ -70,6 +70,7 @@ public class Linechart extends AppCompatActivity {
         LineDataSet dataSet2 = new LineDataSet(entries2, "sensor2");
         dataSet2.setColor(Color.BLUE);
 
+
         LineData lineData = new LineData(dataSet, dataSet2);
 
         lineChart.setData(lineData);
