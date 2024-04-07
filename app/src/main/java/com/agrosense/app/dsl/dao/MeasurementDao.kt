@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 interface MeasurementDao {
 
     @Insert(onConflict = REPLACE)
-    suspend fun insertMeasurements(vararg measurements: Measurement)
+    suspend fun insertMeasurements(vararg measurements: Measurement): LongArray
 
     @Update
     suspend fun updateMeasurements(vararg measurements: Measurement)
@@ -31,4 +31,8 @@ interface MeasurementDao {
 
     @Query("SELECT * from reading WHERE measurementParentId = :measurementId")
     fun loadReadingsByMeasurement(measurementId: Long): Flow<List<TemperatureReading>>
+
+    @Query("SELECT * from reading order by recordedAt DESC LIMIT 1")
+    fun loadLastReadingForMeasurement(): Flow<TemperatureReading?>
+
 }
