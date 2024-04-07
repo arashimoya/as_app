@@ -18,12 +18,11 @@ import com.agrosense.app.R
 class BluetoothFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var viewModel: BluetoothDeviceViewModel
 
     companion object {
         fun newInstance() = BluetoothFragment()
     }
-
-    private lateinit var viewModel: BluetoothDeviceViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
