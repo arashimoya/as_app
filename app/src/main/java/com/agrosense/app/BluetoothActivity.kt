@@ -16,19 +16,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.os.Message
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.agrosense.app.bluetooth.BluetoothCommunicationService
-import com.agrosense.app.bluetooth.MESSAGE_READ
-import com.agrosense.app.bluetooth.MESSAGE_TOAST
-import com.agrosense.app.bluetooth.MESSAGE_WRITE
 import com.agrosense.app.ui.main.BluetoothDeviceViewModel
 import com.agrosense.app.ui.main.BluetoothFragment
-import java.lang.ref.WeakReference
 
 
 val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -52,45 +46,10 @@ class BluetoothActivity : AppCompatActivity() {
 
     private lateinit var deviceViewModel: BluetoothDeviceViewModel
 
-
     private val handler: Handler = MyHandler(this)
 
     private var bluetoothService: BluetoothConnectionService? = null
     private var isServiceBound: Boolean = false
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-
-            val binder = service as BluetoothConnectionService.LocalBinder
-            bluetoothService = binder.getService()
-            isServiceBound = true
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            isServiceBound = false
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Intent(this, BluetoothConnectionService::class.java).also { intent ->
-            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (isServiceBound) {
-            unbindService(serviceConnection)
-            isServiceBound = false
-        }
-    }
-
-    fun connectToDevice(device: BluetoothDevice) {
-        if (isServiceBound) {
-            bluetoothService?.connect(device)
-        }
-    }
 
 
     @SuppressLint("MissingPermission")
@@ -128,11 +87,6 @@ class BluetoothActivity : AppCompatActivity() {
         }
 
         bluetoothAdapter.startDiscovery()
-
-//        button.setOnClickListener {
-//            val message = sendTextView.text.toString()
-//            bluetoothCommunicationService.write(message.toByteArray())
-//        }
     }
 
 
@@ -159,7 +113,6 @@ class BluetoothActivity : AppCompatActivity() {
                     when ((intent.extras?.get(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice).bondState) {
                         BluetoothDevice.BOND_BONDED -> {
                             Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")
-//                            switchToFragment()
                         }
 
                         BluetoothDevice.BOND_BONDING -> Log.d(
@@ -174,14 +127,6 @@ class BluetoothActivity : AppCompatActivity() {
             }
         }
 
-    }
-
-    private fun switchToFragment() {
-        val newFragment = MeasurementFragment()
-        val transaction = supportFragmentManager.beginTransaction()
-
-        transaction.replace(R.id.fragment_container, newFragment)
-        transaction.commit()
     }
 
     override fun onDestroy() {
@@ -202,34 +147,40 @@ class BluetoothActivity : AppCompatActivity() {
     private fun hasAllPermissions(context: Context) =
         ALL_BLE_PERMISSIONS.all { context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
 
-    private class MyHandler(activity: BluetoothActivity) : Handler() {
-        private val activityReference = WeakReference(activity)
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
 
-        override fun handleMessage(msg: Message) {
-            val activity = activityReference.get()
-            activity?.let {
-                when (msg.what) {
-                    MESSAGE_READ -> {
-                        val bytes = msg.obj as ByteArray
-                        val readMessage = String(bytes, 0, msg.arg1)
-                        Toast.makeText(activity, readMessage, Toast.LENGTH_SHORT).show()
-                        Log.i(TAG, "Message read: $readMessage")
-                    }
+            val binder = service as BluetoothConnectionService.LocalBinder
+            bluetoothService = binder.getService()
+            isServiceBound = true
+        }
 
-                    MESSAGE_WRITE -> {
-
-                    }
-
-                    MESSAGE_TOAST -> {
-                        val toastMessage = msg.data.getString("toast")
-                        Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show()
-                    }
-
-                    else -> {}
-                }
-            }
+        override fun onServiceDisconnected(name: ComponentName) {
+            isServiceBound = false
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        Intent(this, BluetoothConnectionService::class.java).also { intent ->
+            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (isServiceBound) {
+            unbindService(serviceConnection)
+            isServiceBound = false
+        }
+    }
+
+    fun connectToDevice(device: BluetoothDevice) {
+        if (isServiceBound) {
+            bluetoothService?.connect(device)
+        }
+    }
+
 
 
     companion object {

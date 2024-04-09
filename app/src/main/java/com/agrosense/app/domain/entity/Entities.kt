@@ -19,7 +19,7 @@ data class Measurement(
 
 @Entity(tableName = "reading")
 data class TemperatureReading(
-    @PrimaryKey val temperatureReadingId: Long,
+    @PrimaryKey(autoGenerate = true) val temperatureReadingId: Long?,
     val value: Double,
     @ColumnInfo(name = "recordedAt") val recordedAt: DateTime,
     val measurementParentId: Long
