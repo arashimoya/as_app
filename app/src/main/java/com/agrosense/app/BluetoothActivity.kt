@@ -46,7 +46,7 @@ class BluetoothActivity : AppCompatActivity() {
 
     private lateinit var deviceViewModel: BluetoothDeviceViewModel
 
-    private val handler: Handler = MyHandler(this)
+    private val handler: Handler = MessageHandler(this)
 
     private var bluetoothService: BluetoothConnectionService? = null
     private var isServiceBound: Boolean = false

@@ -10,7 +10,7 @@ import com.agrosense.app.bluetooth.MESSAGE_WRITE
 import com.agrosense.app.parser.MessageSerializer
 import java.lang.ref.WeakReference
 
-class MyHandler(activity: BluetoothActivity) : Handler() {
+class MessageHandler(activity: BluetoothActivity) : Handler() {
     private val activityReference = WeakReference(activity)
     private val inserter = ReadingInserter(activityReference)
     private val parser = MessageSerializer()
