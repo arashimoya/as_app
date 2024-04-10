@@ -12,7 +12,7 @@ import java.lang.ref.WeakReference
 
 class MessageHandler(activity: BluetoothActivity) : Handler() {
     private val activityReference = WeakReference(activity)
-    private val inserter = ReadingInserter(activityReference)
+    private val inserter = ReadingInserter.fromActivity(activityReference)
     private val parser = MessageSerializer()
 
     override fun handleMessage(msg: Message) {
