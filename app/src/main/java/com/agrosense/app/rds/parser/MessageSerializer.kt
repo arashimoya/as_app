@@ -1,4 +1,4 @@
-package com.agrosense.app.parser
+package com.agrosense.app.rds.parser
 
 import com.agrosense.app.domain.message.TemperatureMessage
 

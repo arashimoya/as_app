@@ -1,4 +1,4 @@
-package com.agrosense.app.bluetooth
+package com.agrosense.app.rds.bluetooth
 
 import android.bluetooth.BluetoothSocket
 import android.os.Bundle

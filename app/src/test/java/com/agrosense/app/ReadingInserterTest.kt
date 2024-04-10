@@ -3,6 +3,7 @@ package com.agrosense.app
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
 import com.agrosense.app.domain.message.TemperatureMessage
+import com.agrosense.app.dsl.ReadingInserter
 import com.agrosense.app.dsl.dao.MeasurementDao
 import com.agrosense.app.dsl.dao.ReadingDao
 import com.agrosense.app.dsl.db.AgroSenseDatabase

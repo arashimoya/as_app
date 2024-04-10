@@ -1,4 +1,4 @@
-package com.agrosense.app
+package com.agrosense.app.rds.bluetooth
 
 import android.annotation.SuppressLint
 import android.app.Service
@@ -10,7 +10,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.agrosense.app.bluetooth.BluetoothCommunicationService
 import java.io.IOException
 import java.util.UUID
 

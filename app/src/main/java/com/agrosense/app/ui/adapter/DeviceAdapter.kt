@@ -1,4 +1,4 @@
-package com.agrosense.app
+package com.agrosense.app.ui.adapter
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.agrosense.app.R
 
 class DeviceAdapter(
     var data: List<BluetoothDevice>,

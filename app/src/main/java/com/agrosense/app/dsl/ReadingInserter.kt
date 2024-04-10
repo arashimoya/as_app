@@ -1,6 +1,7 @@
-package com.agrosense.app
+package com.agrosense.app.dsl
 
 import android.util.Log
+import com.agrosense.app.BluetoothActivity
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
 import com.agrosense.app.domain.message.TemperatureMessage

@@ -20,7 +20,9 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
-import com.agrosense.app.bluetooth.BluetoothCommunicationService
+import com.agrosense.app.rds.MessageHandler
+import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
+import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
 import com.agrosense.app.ui.main.BluetoothDeviceViewModel
 import com.agrosense.app.ui.main.BluetoothFragment
 

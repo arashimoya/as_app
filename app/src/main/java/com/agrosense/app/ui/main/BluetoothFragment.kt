@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agrosense.app.BluetoothActivity
-import com.agrosense.app.DeviceAdapter
+import com.agrosense.app.ui.adapter.DeviceAdapter
 import com.agrosense.app.R
 
 class BluetoothFragment : Fragment() {

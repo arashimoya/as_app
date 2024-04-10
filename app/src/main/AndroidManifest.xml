@@ -21,12 +21,9 @@
         android:theme="@style/Theme.Asapp"
         tools:targetApi="31">
         <service
-            android:name=".BluetoothConnectionService"
+            android:name=".rds.bluetooth.BluetoothConnectionService"
             android:enabled="true"
             android:exported="true" />
-        <activity
-            android:name=".MainActivity2"
-            android:exported="false" />
         <activity
             android:name=".BluetoothActivity"
             android:exported="false" />

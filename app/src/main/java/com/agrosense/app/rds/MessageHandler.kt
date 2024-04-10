@@ -1,13 +1,15 @@
-package com.agrosense.app
+package com.agrosense.app.rds
 
 import android.os.Handler
 import android.os.Message
 import android.util.Log
 import android.widget.Toast
-import com.agrosense.app.bluetooth.MESSAGE_READ
-import com.agrosense.app.bluetooth.MESSAGE_TOAST
-import com.agrosense.app.bluetooth.MESSAGE_WRITE
-import com.agrosense.app.parser.MessageSerializer
+import com.agrosense.app.BluetoothActivity
+import com.agrosense.app.dsl.ReadingInserter
+import com.agrosense.app.rds.bluetooth.MESSAGE_READ
+import com.agrosense.app.rds.bluetooth.MESSAGE_TOAST
+import com.agrosense.app.rds.bluetooth.MESSAGE_WRITE
+import com.agrosense.app.rds.parser.MessageSerializer
 import java.lang.ref.WeakReference
 
 class MessageHandler(activity: BluetoothActivity) : Handler() {
@@ -25,8 +27,6 @@ class MessageHandler(activity: BluetoothActivity) : Handler() {
                     Log.i(BluetoothActivity.TAG, "Message read: $readMessage")
 
                     inserter.insert(parser.process(readMessage))
-
-
                 }
 
                 MESSAGE_WRITE -> {
