@@ -1,4 +1,4 @@
-package com.agrosense.app.ui.measurement
+package com.agrosense.app.ui.views.measurement
 
 import androidx.lifecycle.ViewModel
 import com.agrosense.app.domain.entity.TemperatureReading

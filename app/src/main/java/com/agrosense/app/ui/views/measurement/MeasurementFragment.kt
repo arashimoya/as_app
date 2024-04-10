@@ -1,4 +1,4 @@
-package com.agrosense.app.ui.measurement
+package com.agrosense.app.ui.views.measurement
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

@@ -23,8 +23,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.agrosense.app.rds.MessageHandler
 import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
 import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
-import com.agrosense.app.ui.main.BluetoothDeviceViewModel
-import com.agrosense.app.ui.main.BluetoothFragment
+import com.agrosense.app.ui.views.main.BluetoothDeviceViewModel
+import com.agrosense.app.ui.views.main.BluetoothFragment
 
 
 val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

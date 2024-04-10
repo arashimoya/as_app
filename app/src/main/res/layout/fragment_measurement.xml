@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.measurement.MeasurementFragment"
+    tools:context=".ui.views.measurement.MeasurementFragment"
     android:id="@+id/measurement_container">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
