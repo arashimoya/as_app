@@ -5,10 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import com.agrosense.app.domain.entity.Measurement
-import com.agrosense.app.domain.entity.MeasurementWithReadings
 import com.agrosense.app.domain.entity.TemperatureReading
 import kotlinx.coroutines.flow.Flow
 
@@ -24,10 +22,8 @@ interface MeasurementDao {
     @Delete
     suspend fun deleteMeasurements(vararg measurements: Measurement)
 
-    @Transaction
     @Query("SELECT * FROM measurement")
-    fun getMeasurementsWithReadings(): List<MeasurementWithReadings>
-
+    fun loadMeasurements(): Flow<List<Measurement>>
 
     @Query("SELECT * from reading WHERE measurementParentId = :measurementId")
     fun loadReadingsByMeasurement(measurementId: Long): Flow<List<TemperatureReading>>
