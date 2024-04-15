@@ -7,6 +7,8 @@ class Converters {
 
     @TypeConverter
     fun fromISO8601(value: String?): DateTime? {
+        if (value == null)
+            return null
         return DateTime.parse(value)
     }
 

@@ -22,7 +22,7 @@ interface MeasurementDao {
     @Delete
     suspend fun deleteMeasurements(vararg measurements: Measurement)
 
-    @Query("SELECT * FROM measurement")
+    @Query("SELECT * FROM measurement ORDER BY `end`")
     fun loadMeasurements(): Flow<List<Measurement>>
 
     @Query("SELECT * from reading WHERE measurementParentId = :measurementId")

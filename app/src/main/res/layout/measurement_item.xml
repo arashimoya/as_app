@@ -27,9 +27,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/measurementNameTextView"
-            android:text="@string/n_a"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:layout_marginTop="8dp" />
+            android:text="@string/test_date"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:layout_marginTop="6dp" />
 
         <ImageView
             android:id="@+id/iconImageView"

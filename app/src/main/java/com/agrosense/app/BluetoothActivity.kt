@@ -25,6 +25,7 @@ import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
 import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
 import com.agrosense.app.ui.views.main.BluetoothDeviceViewModel
 import com.agrosense.app.ui.views.main.BluetoothFragment
+import com.agrosense.app.ui.views.measurementlist.MeasurementListFragment
 
 
 val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -60,7 +61,7 @@ class BluetoothActivity : AppCompatActivity() {
         setContentView(R.layout.activity_bluetooth)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, BluetoothFragment.newInstance())
+                .replace(R.id.container, MeasurementListFragment.newInstance())
                 .commitNow()
         }
 
@@ -180,6 +181,22 @@ class BluetoothActivity : AppCompatActivity() {
     fun connectToDevice(device: BluetoothDevice) {
         if (isServiceBound) {
             bluetoothService?.connect(device)
+        }
+    }
+
+
+    override fun onBackPressed() {
+        if (!navigateBack()) {
+            super.onBackPressed()
+        }
+    }
+    private fun navigateBack(): Boolean {
+        val fragmentManager = supportFragmentManager
+        return if (fragmentManager.backStackEntryCount > 0) {
+            fragmentManager.popBackStack()
+            true
+        } else {
+            false
         }
     }
 

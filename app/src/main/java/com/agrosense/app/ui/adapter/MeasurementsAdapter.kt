@@ -10,10 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agrosense.app.R
 import com.agrosense.app.domain.entity.Measurement
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import java.lang.StringBuilder
 
 class MeasurementsAdapter(
-    var data: List<Measurement>,
+    var data: MutableList<Measurement>,
     private val onItemClick: (Measurement) -> Unit
 ) : RecyclerView.Adapter<MeasurementsAdapter.ViewHolder>() {
 
@@ -32,9 +34,15 @@ class MeasurementsAdapter(
         fun bind(model: Measurement, drawable: Drawable) {
             measurementNameText.text = model.name
             startEndText.text =
-                StringBuilder().append(model.start.toString()).append(" ")
-                    .append(model.end?.toString())
+                StringBuilder().append(formatDate(model.start)).append("—")
+                    .append(formatDate(model.end))
             icon.setImageDrawable(drawable)
+        }
+
+        private fun formatDate(date: DateTime?): String {
+            return if(date != null)
+                (DateTimeFormat.forPattern("yyyy/MM/dd HH:mm").print(date))
+            else ""
         }
     }
 
@@ -56,19 +64,19 @@ class MeasurementsAdapter(
 
     }
 
-    fun updateDataSet(devices: List<Measurement>) {
+    fun updateDataSet(measurements: List<Measurement>) {
         val oldData = data
-        data + devices
-        notifyItemRangeInserted(oldData.size - 1, devices.size)
+        data.addAll(measurements)
+        notifyItemRangeInserted(oldData.size - 1, measurements.size)
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun determineIconDrawable(measurement: Measurement, view: View): Drawable =
         measurement.end?.let {
             return view.resources.getDrawable(
-                R.drawable.baseline_hourglass_bottom_24,
+                R.drawable.baseline_check_24,
                 view.context.theme
             )
-        } ?: view.resources.getDrawable(R.drawable.baseline_check_24, view.context.theme)
+        } ?: view.resources.getDrawable(R.drawable.baseline_hourglass_bottom_24, view.context.theme)
 
 }

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +21,7 @@ class MeasurementFragment : Fragment() {
     private lateinit var measurementViewModel: MeasurementViewModel
 
     private lateinit var textView: TextView
+    private lateinit var backButton: ImageView
 
     companion object {
         fun newInstance() = MeasurementFragment()
@@ -52,6 +54,9 @@ class MeasurementFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         textView = view.findViewById(R.id.latest_temperature)
+        backButton = view.findViewById(R.id.backButton)
+        backButton.setOnClickListener { onBackPressed() }
+
     }
 
     private fun changeTextWithAnimation(textView: TextView, newText: String) {
@@ -65,6 +70,11 @@ class MeasurementFragment : Fragment() {
             }
         })
         fadeOut.start()
+    }
+
+     private fun onBackPressed() {
+        requireActivity().onBackPressed()
+
     }
 
 }
