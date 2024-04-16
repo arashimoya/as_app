@@ -102,7 +102,10 @@ class BluetoothActivity : AppCompatActivity() {
             bluetoothService.write(message.toByteArray())
         }
 
-        adapter = DeviceAdapter(devices, ::connect)
+        adapter = DeviceAdapter(devices, emptyList()) { device ->
+            connect(device)
+        }
+
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
     }

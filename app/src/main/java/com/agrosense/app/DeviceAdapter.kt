@@ -10,24 +10,38 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.reflect.KFunction1
 
 class DeviceAdapter(
-    private var data: List<BluetoothDevice>,
-    private val onItemClick: (BluetoothDevice)-> Unit)
+        private var data: List<BluetoothDevice>,
+        private val connectedDevices: List<BluetoothDevice>,
+        private val onItemClick: (BluetoothDevice)-> Unit)
     : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
     class ViewHolder(view: View, onItemClicked: (Int)-> Unit) : RecyclerView.ViewHolder(view) {
 
 
         private val deviceNameText: TextView = view.findViewById(R.id.device_id)
+        private val deviceIsPairedText: TextView = view.findViewById(R.id.device_isPaired)
+
         init {
             itemView.setOnClickListener {
                 onItemClicked(adapterPosition)
             }
         }
 
-        fun bind(model: BluetoothDevice) {
+        fun bind(model: BluetoothDevice, connectedDevices: List<BluetoothDevice>) {
             deviceNameText.text = model.name ?: "Unknown Device"
+
+            val isPaired = model.bondState == BluetoothDevice.BOND_BONDED
+            val isConnected = connectedDevices.contains(model)
+
+            val isPairedText = if (isPaired) {
+                if (isConnected) "Paired & Connected" else "Paired"
+            } else {
+                "Not Paired"
+            }
+            deviceIsPairedText.text = isPairedText
         }
     }
 
@@ -41,7 +55,7 @@ class DeviceAdapter(
     override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.bind(data[position])
+        viewHolder.bind(data[position], connectedDevices)
         if (ActivityCompat.checkSelfPermission(viewHolder.itemView.context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
             Log.d("DeviceAdapter", "onBindViewHolder: " + data[position].name)
         }

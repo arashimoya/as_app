@@ -26,6 +26,8 @@
         app:layout_constraintTop_toBottomOf="@id/toolbarBTA"
         tools:listitem="@layout/device_item" />
 
+
+
     <LinearLayout
         android:id="@+id/bt_linear_layout"
         android:layout_width="match_parent"
