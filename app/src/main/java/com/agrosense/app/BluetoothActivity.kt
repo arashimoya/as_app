@@ -24,8 +24,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.agrosense.app.rds.MessageHandler
 import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
 import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
-import com.agrosense.app.ui.views.main.BluetoothDeviceViewModel
-import com.agrosense.app.ui.views.measurementlist.MeasurementListFragment
+import com.agrosense.app.ui.views.devices.BluetoothDeviceViewModel
+import com.agrosense.app.ui.views.main.NavFragment
 
 
 val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -60,9 +60,7 @@ class BluetoothActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth)
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, MeasurementListFragment.newInstance())
-                .commitNow()
+            replaceFragment(NavFragment.newInstance())
         }
 
         if (!hasAllPermissions(this)) {
@@ -183,28 +181,8 @@ class BluetoothActivity : AppCompatActivity() {
         }
     }
 
-
-    override fun onBackPressed() {
-        if (!navigateBack()) {
-            super.onBackPressed()
-        }
-    }
-
-    private fun navigateBack(): Boolean {
-        val fragmentManager = supportFragmentManager
-        return if (fragmentManager.backStackEntryCount > 0) {
-            fragmentManager.popBackStack()
-            true
-        } else {
-            false
-        }
-    }
-
-    fun replaceFragment(fragment: Fragment, backStack: Fragment?) {
-        val transaction =
-            supportFragmentManager.beginTransaction().replace(R.id.container, fragment)
-        backStack?.let { transaction.addToBackStack(it::class.java.simpleName) }
-        transaction.commit()
+    fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
     }
 
 

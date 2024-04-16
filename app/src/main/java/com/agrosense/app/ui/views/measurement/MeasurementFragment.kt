@@ -12,8 +12,10 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.agrosense.app.BluetoothActivity
 import com.agrosense.app.R
 import com.agrosense.app.dsl.db.AgroSenseDatabase
+import com.agrosense.app.ui.views.main.NavFragment
 import com.agrosense.app.viewmodelfactory.MeasurementViewModelFactory
 import kotlinx.coroutines.launch
 
@@ -73,8 +75,7 @@ class MeasurementFragment : Fragment() {
     }
 
      private fun onBackPressed() {
-        requireActivity().onBackPressed()
-
+         (requireActivity() as BluetoothActivity).replaceFragment(NavFragment.newInstance())
     }
 
 }

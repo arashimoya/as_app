@@ -1,4 +1,4 @@
-package com.agrosense.app.ui.views.main
+package com.agrosense.app.ui.views.devices
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice

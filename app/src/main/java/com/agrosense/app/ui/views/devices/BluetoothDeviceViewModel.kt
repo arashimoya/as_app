@@ -1,4 +1,4 @@
-package com.agrosense.app.ui.views.main
+package com.agrosense.app.ui.views.devices
 
 import android.bluetooth.BluetoothDevice
 import androidx.lifecycle.LiveData

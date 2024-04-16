@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.agrosense.app.BluetoothActivity
 import com.agrosense.app.R
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.dsl.db.AgroSenseDatabase
@@ -59,23 +60,17 @@ class MeasurementListFragment : Fragment() {
     }
 
     private fun openDetailedView(measurement: Measurement) {
-        val fragmentManager = requireActivity().supportFragmentManager
-        val transaction = fragmentManager.beginTransaction()
+
 
         //TODO switch to graphs when measurement is historical (end != null)
         if (measurement.end == null) {
-            transaction.replace(R.id.container, MeasurementFragment.newInstance())
-            transaction.addToBackStack(this::class.java.simpleName)
-
-            transaction.commit()
+            (requireActivity() as BluetoothActivity).replaceFragment(MeasurementFragment.newInstance())
         } else {
 //            val args = Bundle()
 //            measurement.measurementId?.let { args.putLong(measurementKey, it) }
 //            fragment.arguments = args
             Toast.makeText(requireContext(), "Not implemented yet! ^^", Toast.LENGTH_SHORT).show()
         }
-
-
     }
 
 }
