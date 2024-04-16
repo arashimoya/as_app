@@ -19,12 +19,12 @@ import android.os.IBinder
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.agrosense.app.rds.MessageHandler
 import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
 import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
 import com.agrosense.app.ui.views.main.BluetoothDeviceViewModel
-import com.agrosense.app.ui.views.main.BluetoothFragment
 import com.agrosense.app.ui.views.measurementlist.MeasurementListFragment
 
 
@@ -142,7 +142,6 @@ class BluetoothActivity : AppCompatActivity() {
     }
 
 
-
     private fun grantPermissions() {
         ActivityCompat.requestPermissions(this, ALL_BLE_PERMISSIONS, 2)
     }
@@ -190,6 +189,7 @@ class BluetoothActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
     private fun navigateBack(): Boolean {
         val fragmentManager = supportFragmentManager
         return if (fragmentManager.backStackEntryCount > 0) {
@@ -200,6 +200,12 @@ class BluetoothActivity : AppCompatActivity() {
         }
     }
 
+    fun replaceFragment(fragment: Fragment, backStack: Fragment?) {
+        val transaction =
+            supportFragmentManager.beginTransaction().replace(R.id.container, fragment)
+        backStack?.let { transaction.addToBackStack(it::class.java.simpleName) }
+        transaction.commit()
+    }
 
 
     companion object {
