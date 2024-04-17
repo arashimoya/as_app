@@ -9,14 +9,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agrosense.app.R
+import com.agrosense.app.datautil.resolver.DataSetResolver
 import com.agrosense.app.domain.entity.Measurement
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-import java.lang.StringBuilder
 
 class MeasurementsAdapter(
     var data: MutableList<Measurement>,
-    private val onItemClick: (Measurement) -> Unit
+    private val onItemClick: (Measurement) -> Unit,
+    private val dataSetResolver: DataSetResolver<Measurement>
 ) : RecyclerView.Adapter<MeasurementsAdapter.ViewHolder>() {
 
     class ViewHolder(view: View, onItemClick: (Int) -> Unit) :
@@ -40,7 +41,7 @@ class MeasurementsAdapter(
         }
 
         private fun formatDate(date: DateTime?): String {
-            return if(date != null)
+            return if (date != null)
                 (DateTimeFormat.forPattern("yyyy/MM/dd HH:mm").print(date))
             else ""
         }
@@ -66,9 +67,12 @@ class MeasurementsAdapter(
 
     fun updateDataSet(measurements: List<Measurement>) {
         val oldData = data
-        data.addAll(measurements)
-        notifyItemRangeInserted(oldData.size - 1, measurements.size)
+        data = dataSetResolver.sort(measurements)
+
+        dataSetResolver.resolveNewlyAdded(oldData, data).forEach { notifyItemInserted(data.indexOf(it)) }
+        dataSetResolver.resolveUpdated(oldData, data).forEach { notifyItemChanged(data.indexOf(it)) }
     }
+
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun determineIconDrawable(measurement: Measurement, view: View): Drawable =

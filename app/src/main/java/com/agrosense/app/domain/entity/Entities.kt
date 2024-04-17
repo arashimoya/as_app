@@ -1,10 +1,8 @@
 package com.agrosense.app.domain.entity
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import org.joda.time.DateTime
 
 @Entity(tableName = "measurement")
@@ -12,10 +10,17 @@ data class Measurement(
     @PrimaryKey(autoGenerate = true) val measurementId: Long?,
     val name: String,
     val start: DateTime,
-    val end: DateTime?,
+    var end: DateTime?,
     val maxValue: Double,
     val minValue: Double,
-)
+){
+    constructor(
+        name: String,
+        start: DateTime,
+        maxValue: Double,
+        minValue: Double
+    ): this(null, name, start, null, maxValue, minValue)
+}
 
 @Entity(tableName = "reading")
 data class TemperatureReading(
@@ -25,10 +30,3 @@ data class TemperatureReading(
     val measurementParentId: Long
 )
 
-data class MeasurementWithReadings(
-    @Embedded val measurement: Measurement,
-    @Relation(
-        parentColumn = "measurementId",
-        entityColumn = "measurementParentId"
-    ) val readings: List<TemperatureReading>
-)

@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
 import kotlinx.coroutines.flow.Flow
+import org.joda.time.DateTime
 
 @Dao
 interface MeasurementDao {
@@ -33,5 +34,8 @@ interface MeasurementDao {
 
     @Query("SELECT * from measurement where `end` = null LIMIT 1")
     fun loadLastNotFinishedMeasurement(): Measurement?
+
+    @Query("UPDATE measurement SET `end` = :dateTime WHERE `end` is null")
+    suspend fun updateAllMeasurementEndsToNow(dateTime: DateTime)
 
 }
