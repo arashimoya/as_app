@@ -53,18 +53,17 @@ class MeasurementFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewLifecycleOwner.lifecycleScope.launch {
-            measurementViewModel.lastTemperatureReading.collect { reading ->
-                changeTextWithAnimation(textView, reading?.value?.toString() ?: "N/A")
-
-            }
-        }
         return inflater.inflate(R.layout.fragment_measurement, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         textView = view.findViewById(R.id.latest_temperature)
+        viewLifecycleOwner.lifecycleScope.launch {
+            measurementViewModel.lastTemperatureReading.collect { reading ->
+                changeTextWithAnimation(textView, reading?.value?.toString() ?: "N/A")
+            }
+        }
 
         backButton = view.findViewById(R.id.backButton)
         backButton.setOnClickListener { onBackPressed() }
