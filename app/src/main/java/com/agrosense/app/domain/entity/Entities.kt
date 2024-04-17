@@ -11,14 +11,14 @@ data class Measurement(
     val name: String,
     val start: DateTime,
     var end: DateTime?,
-    val maxValue: Double,
-    val minValue: Double,
+    val maxValue: Double?,
+    val minValue: Double?,
 ){
     constructor(
         name: String,
         start: DateTime,
-        maxValue: Double,
-        minValue: Double
+        maxValue: Double?,
+        minValue: Double?
     ): this(null, name, start, null, maxValue, minValue)
 }
 
