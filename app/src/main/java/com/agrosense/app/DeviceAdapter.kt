@@ -30,18 +30,15 @@ class DeviceAdapter(
             }
         }
 
-        fun bind(model: BluetoothDevice, connectedDevices: List<BluetoothDevice>) {
+        fun bind(model: BluetoothDevice) {
             deviceNameText.text = model.name ?: "Unknown Device"
 
             val isPaired = model.bondState == BluetoothDevice.BOND_BONDED
-            val isConnected = connectedDevices.contains(model)
-
-            val isPairedText = if (isPaired) {
-                if (isConnected) "Paired & Connected" else "Paired"
+            deviceIsPairedText.text = if (isPaired) {
+                "Paired"
             } else {
                 "Not Paired"
             }
-            deviceIsPairedText.text = isPairedText
         }
     }
 
@@ -55,7 +52,7 @@ class DeviceAdapter(
     override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.bind(data[position], connectedDevices)
+        viewHolder.bind(data[position])
         if (ActivityCompat.checkSelfPermission(viewHolder.itemView.context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
             Log.d("DeviceAdapter", "onBindViewHolder: " + data[position].name)
         }
