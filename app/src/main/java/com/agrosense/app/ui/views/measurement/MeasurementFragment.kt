@@ -24,7 +24,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 
 
-//TODO handle FAB stop
 class MeasurementFragment : Fragment() {
     private lateinit var measurementViewModel: MeasurementViewModel
     private lateinit var measurementRepository: MeasurementRepo

@@ -80,30 +80,11 @@ class MeasurementListFragment : Fragment() {
         }
     }
 
-    private fun openCreateDialog() {
-
-        InsertNewMeasurementDialog().show(requireActivity().supportFragmentManager, "INSERT_NEW_MEAS")
-//        val builder = AlertDialog.Builder(requireContext())
-//        val dialogView =
-//            requireActivity().layoutInflater.inflate(R.layout.dialog_insert_new_measurement, null)
-//        floorText = dialogView.findViewById(R.id.edit_floor)
-//        ceilingText = dialogView.findViewById(R.id.edit_ceiling)
-//        nameText = dialogView.findViewById(R.id.edit_name)
-//
-//        builder.setView(dialogView)
-//            .setTitle("Start new Measurement")
-//            .setPositiveButton("Confirm") { dialog, _ ->
-//                handleConfirm(dialog)
-//
-//            }.setNegativeButton("Cancel") { dialog, _ ->
-//                dialog.cancel()
-//            }
-//        val dialog = builder.create()
-//        dialog.setCanceledOnTouchOutside(true)
-//        dialog.show()
-//        val confirmButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-//        inputValidator.validate(nameText, floorText, ceilingText, confirmButton)
-    }
+    private fun openCreateDialog() =
+        InsertNewMeasurementDialog().show(
+            requireActivity().supportFragmentManager,
+            "INSERT_NEW_MEAS"
+        )
 
 
     private fun openDetailedView(measurement: Measurement) {
