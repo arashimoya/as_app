@@ -1,4 +1,4 @@
-package com.agrosense.app
+package com.agrosense.app.ui.adapter
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
@@ -10,9 +10,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.agrosense.app.R
 
 class DeviceAdapter(
-    private var data: List<BluetoothDevice>,
+    var data: List<BluetoothDevice>,
     private val onItemClick: (BluetoothDevice)-> Unit)
     : RecyclerView.Adapter<DeviceAdapter.ViewHolder>() {
 
@@ -46,6 +47,12 @@ class DeviceAdapter(
             Log.d("DeviceAdapter", "onBindViewHolder: " + data[position].name)
         }
 
+    }
+
+    fun updateDataSet(devices: List<BluetoothDevice>){
+        val oldData = data
+        data + devices
+        notifyItemRangeInserted(oldData.size-1, devices.size)
     }
 
 

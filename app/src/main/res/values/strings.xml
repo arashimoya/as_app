@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">asapp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fab_add_measurement">Add new measurement</string>
+    <string name="n_a">N/A</string>
+    <string name="n_a_2line">N/A \n N/A</string>
+    <string name="state">State</string>
+    <string name="test_date">1970/01/01 12:00 — 1970/01/01 12:00</string>
+    <string name="back_button_description">arrow to go back duh</string>
 </resources>

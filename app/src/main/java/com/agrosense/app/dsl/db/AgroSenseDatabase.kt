@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
@@ -12,7 +11,7 @@ import com.agrosense.app.dsl.converter.Converters
 import com.agrosense.app.dsl.dao.MeasurementDao
 import com.agrosense.app.dsl.dao.ReadingDao
 
-@Database(entities = [Measurement::class, TemperatureReading::class], version = 1)
+@Database(entities = [Measurement::class, TemperatureReading::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class AgroSenseDatabase : RoomDatabase(){
     abstract fun measurementDao(): MeasurementDao
@@ -28,7 +27,8 @@ abstract class AgroSenseDatabase : RoomDatabase(){
                     context.applicationContext,
                     AgroSenseDatabase::class.java,
                     "agrosense_database"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
