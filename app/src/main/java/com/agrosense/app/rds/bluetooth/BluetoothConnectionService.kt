@@ -3,7 +3,6 @@ package com.agrosense.app.rds.bluetooth
 import android.annotation.SuppressLint
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
@@ -11,7 +10,6 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import java.io.IOException
-import java.util.UUID
 
 class BluetoothConnectionService : Service() {
 
