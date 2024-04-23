@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.agrosense.app.dsl.db.AgroSenseDatabase.Companion.getDatabase
 import com.agrosense.app.rds.MessageHandler
 import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
 import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
@@ -49,7 +50,7 @@ class BluetoothActivity : AppCompatActivity() {
 
     private lateinit var deviceViewModel: BluetoothDeviceViewModel
 
-    private val handler: Handler = MessageHandler(this)
+    private lateinit var handler: Handler
 
     private var bluetoothService: BluetoothConnectionService? = null
     private var isServiceBound: Boolean = false
@@ -59,6 +60,8 @@ class BluetoothActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth)
+        getDatabase(this)
+        handler = MessageHandler(this)
         if (savedInstanceState == null) {
             replaceFragment(NavFragment.newInstance())
         }
