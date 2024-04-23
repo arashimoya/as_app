@@ -12,6 +12,7 @@ import com.agrosense.app.datautil.validator.NewMeasurementDataValidator
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.dsl.MeasurementRepo
 import com.agrosense.app.dsl.MeasurementRepository
+import com.agrosense.app.rds.bluetooth.MeasurementManager
 import com.agrosense.app.timeprovider.CurrentTimeProvider
 import com.agrosense.app.timeprovider.TimeProvider
 import com.agrosense.app.ui.views.measurement.MeasurementFragment
@@ -25,6 +26,7 @@ class InsertNewMeasurementDialog: DialogFragment() {
     private val inputValidator = NewMeasurementDataValidator()
     private lateinit var timeProvider: TimeProvider
     private lateinit var measurementRepository: MeasurementRepo
+    private lateinit var measurementManager: MeasurementManager
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -32,6 +34,7 @@ class InsertNewMeasurementDialog: DialogFragment() {
 
             timeProvider = CurrentTimeProvider()
             measurementRepository = MeasurementRepository.getInstance(requireContext(), timeProvider)
+            measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
             val builder = AlertDialog.Builder(it)
             val inflater = it.layoutInflater
 
@@ -71,7 +74,7 @@ class InsertNewMeasurementDialog: DialogFragment() {
     }
 
     private fun proceedWithNewMeasurement(name: String, ceiling: Double?, floor: Double?) {
-        //TODO call bluetooth
+        measurementManager.start()
         measurementRepository.insertNewMeasurement(
             Measurement(
                 name,

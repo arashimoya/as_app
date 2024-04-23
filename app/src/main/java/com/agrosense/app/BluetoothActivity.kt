@@ -185,6 +185,10 @@ class BluetoothActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
     }
 
+    fun getCommunicationService(): BluetoothCommunicationService {
+        return bluetoothCommunicationService
+    }
+
 
     companion object {
         const val TAG: String = "BluetoothActivity"

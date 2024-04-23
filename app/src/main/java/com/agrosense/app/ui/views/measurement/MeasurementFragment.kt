@@ -17,6 +17,7 @@ import com.agrosense.app.R
 import com.agrosense.app.dsl.MeasurementRepo
 import com.agrosense.app.dsl.MeasurementRepository
 import com.agrosense.app.dsl.db.AgroSenseDatabase
+import com.agrosense.app.rds.bluetooth.MeasurementManager
 import com.agrosense.app.timeprovider.CurrentTimeProvider
 import com.agrosense.app.ui.views.main.NavFragment
 import com.agrosense.app.viewmodelfactory.MeasurementViewModelFactory
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 class MeasurementFragment : Fragment() {
     private lateinit var measurementViewModel: MeasurementViewModel
     private lateinit var measurementRepository: MeasurementRepo
+    private lateinit var measurementManager: MeasurementManager
 
     private lateinit var textView: TextView
     private lateinit var backButton: ImageView
@@ -46,6 +48,7 @@ class MeasurementFragment : Fragment() {
                 )
             )[MeasurementViewModel::class.java]
         measurementRepository = MeasurementRepository.getInstance(requireContext(), CurrentTimeProvider())
+        measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
     }
 
     override fun onCreateView(
@@ -91,6 +94,7 @@ class MeasurementFragment : Fragment() {
 
     private fun stopMeasurement(){
         measurementRepository.updateEndForAllMeasurements()
+        measurementManager.stop()
         onBackPressed()
 
     }
