@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +20,7 @@ import com.agrosense.app.timeprovider.CurrentTimeProvider
 import com.agrosense.app.timeprovider.TimeProvider
 import com.agrosense.app.ui.adapter.MeasurementsAdapter
 import com.agrosense.app.ui.views.dialog.insertmeasurement.InsertNewMeasurementDialog
+import com.agrosense.app.ui.views.linechart.LinechartFragment
 import com.agrosense.app.ui.views.measurement.MeasurementFragment
 import com.agrosense.app.viewmodelfactory.MeasurementListViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -105,7 +105,7 @@ class MeasurementListFragment : Fragment() {
 //            val args = Bundle()
 //            measurement.measurementId?.let { args.putLong(measurementKey, it) }
 //            fragment.arguments = args
-            Toast.makeText(requireContext(), "Not implemented yet! ^^", Toast.LENGTH_SHORT).show()
+           (requireActivity() as BluetoothActivity).replaceFragment(LinechartFragment.newInstance())
         }
     }
 

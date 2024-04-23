@@ -31,6 +31,7 @@ class NavFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        //refreshViewPager()
 //        refreshViewPager()
     }
 
