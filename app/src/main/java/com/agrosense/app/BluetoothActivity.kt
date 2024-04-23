@@ -27,6 +27,7 @@ import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
 import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
 import com.agrosense.app.ui.views.devices.BluetoothDeviceViewModel
 import com.agrosense.app.ui.views.main.NavFragment
+import java.util.UUID
 
 
 val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -114,9 +115,20 @@ class BluetoothActivity : AppCompatActivity() {
 
             when (intent?.action) {
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                    when ((intent.extras?.get(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice).bondState) {
+                    val device: BluetoothDevice? =
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val bondState =
+                        intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)
+
+                    when (bondState) {
                         BluetoothDevice.BOND_BONDED -> {
                             Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")
+                            if (isServiceBound) {
+                                if (device != null) {
+                                    bluetoothService?.connect(device.createRfcommSocketToServiceRecord(
+                                        MY_UUID))
+                                }
+                            }
                         }
 
                         BluetoothDevice.BOND_BONDING -> Log.d(
@@ -178,10 +190,9 @@ class BluetoothActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     fun connectToDevice(device: BluetoothDevice) {
-        if (isServiceBound) {
-            bluetoothService?.connect(device)
-        }
+        device.createBond()
     }
 
     fun replaceFragment(fragment: Fragment) {
@@ -195,6 +206,7 @@ class BluetoothActivity : AppCompatActivity() {
 
     companion object {
         const val TAG: String = "BluetoothActivity"
+        private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     }
 }
 
