@@ -125,8 +125,11 @@ class BluetoothActivity : AppCompatActivity() {
                             Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")
                             if (isServiceBound) {
                                 if (device != null) {
-                                    bluetoothService?.connect(device.createRfcommSocketToServiceRecord(
-                                        MY_UUID))
+                                    bluetoothService?.connect(
+                                        device.createInsecureRfcommSocketToServiceRecord(
+                                            MY_UUID
+                                        )
+                                    )
                                 }
                             }
                         }

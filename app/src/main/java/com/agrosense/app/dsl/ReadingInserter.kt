@@ -1,7 +1,7 @@
 package com.agrosense.app.dsl
 
+import android.content.Context
 import android.util.Log
-import com.agrosense.app.BluetoothActivity
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
 import com.agrosense.app.domain.message.TemperatureMessage
@@ -14,7 +14,6 @@ import com.agrosense.app.timeprovider.CurrentTimeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
 
 class ReadingInserter(
     private val mapper: Mapper<TemperatureMessage, TemperatureReading>,
@@ -57,12 +56,12 @@ class ReadingInserter(
 
     companion object {
         const val TAG = "ReadingInserter"
-        fun fromActivity(activity: WeakReference<BluetoothActivity>): ReadingInserter {
-            val db = activity.get()?.let { AgroSenseDatabase.getDatabase(it) }
+        fun fromContext(context: Context): ReadingInserter {
+            val db =  AgroSenseDatabase.getDatabase(context)
             return ReadingInserter(
                 ReadingMapper(CurrentTimeProvider()),
-                db?.measurementDao(),
-                db?.readingDao()
+                db.measurementDao(),
+                db.readingDao()
             )
         }
     }

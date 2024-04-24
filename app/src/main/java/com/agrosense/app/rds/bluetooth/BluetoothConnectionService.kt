@@ -25,6 +25,7 @@ class BluetoothConnectionService : Service() {
     override fun onBind(intent: Intent): IBinder {
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
         bluetoothAdapter = bluetoothManager.adapter
+        bluetoothCommunicationService = BluetoothCommunicationService(applicationContext)
         return binder
     }
 

@@ -1,12 +1,14 @@
 package com.agrosense.app.rds.bluetooth
 
 import android.bluetooth.BluetoothSocket
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import android.os.Handler
+import com.agrosense.app.rds.MessageHandler
 
 private const val TAG = "BluetoothService"
 const val MESSAGE_READ: Int = 0
@@ -14,6 +16,8 @@ const val MESSAGE_WRITE: Int = 1
 const val MESSAGE_TOAST: Int = 2
 
 class BluetoothCommunicationService(private val handler: Handler) {
+
+    constructor(context: Context): this(MessageHandler(context))
 
     private var connectedThread: ConnectedThread? = null
 
