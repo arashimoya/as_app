@@ -8,6 +8,7 @@ import com.agrosense.app.dsl.dao.MeasurementDao
 import com.agrosense.app.dsl.dao.ReadingDao
 import com.agrosense.app.dsl.db.AgroSenseDatabase
 import com.agrosense.app.mapper.Mapper
+import com.agrosense.app.monitoring.IThresholdChecker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.joda.time.DateTime
@@ -27,6 +28,7 @@ class ReadingInserterTest {
     private val readingDao: ReadingDao = mock()
     private val mockDatabase: AgroSenseDatabase = mock()
     private val mockMapper: Mapper<TemperatureMessage, TemperatureReading> = mock()
+    private val mockChecker: IThresholdChecker = mock()
 
     @Before
     fun setUp() {
@@ -35,7 +37,7 @@ class ReadingInserterTest {
 
         readingInserter = ReadingInserter(
             mockMapper,
-            measurementDao, readingDao
+            measurementDao, readingDao, mockChecker
         )
     }
 
@@ -48,6 +50,7 @@ class ReadingInserterTest {
         readingInserter.insert(list)
 
         verify(readingDao, never()).insertTemperatureReadings(anyOrNull())
+        verify(mockChecker, never()).check(anyOrNull(), anyOrNull())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -69,5 +72,6 @@ class ReadingInserterTest {
         readingInserter.insert(list)
 
         verify(readingDao).insertTemperatureReadings(anyOrNull())
+        verify(mockChecker).check(anyOrNull(), anyOrNull())
     }
 }
