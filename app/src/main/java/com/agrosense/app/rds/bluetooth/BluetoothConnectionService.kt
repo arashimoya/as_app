@@ -3,7 +3,6 @@ package com.agrosense.app.rds.bluetooth
 import android.annotation.SuppressLint
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
@@ -11,7 +10,6 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import java.io.IOException
-import java.util.UUID
 
 class BluetoothConnectionService : Service() {
 
@@ -27,15 +25,14 @@ class BluetoothConnectionService : Service() {
     override fun onBind(intent: Intent): IBinder {
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
         bluetoothAdapter = bluetoothManager.adapter
+        bluetoothCommunicationService = BluetoothCommunicationService(applicationContext)
         return binder
     }
 
     @SuppressLint("MissingPermission")
-    fun connect(device: BluetoothDevice) {
+    fun connect(socket: BluetoothSocket) {
         connectThread?.cancel()
-        device.createBond()
-
-        connectThread = ConnectThread(device).apply { start() }
+        connectThread = ConnectThread(socket).apply { start() }
     }
 
     @SuppressLint("MissingPermission")
@@ -44,20 +41,12 @@ class BluetoothConnectionService : Service() {
     }
 
     @SuppressLint("MissingPermission")
-    private inner class ConnectThread(device: BluetoothDevice) : Thread() {
-        private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-        private val socket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            if (!bluetoothAdapter.isEnabled) {
-                bluetoothAdapter.enable()
-            }
-            bluetoothAdapter.cancelDiscovery()
-            device.createRfcommSocketToServiceRecord(MY_UUID)
-        }
+    private inner class ConnectThread(val socket: BluetoothSocket) : Thread() {
 
         override fun run() {
             bluetoothAdapter.cancelDiscovery()
 
-            socket?.let { socket ->
+            socket.let { socket ->
                 socket.connect()
                 bluetoothCommunicationService.read(socket)
             }
@@ -65,7 +54,7 @@ class BluetoothConnectionService : Service() {
 
         fun cancel() {
             try {
-                socket?.close()
+                socket.close()
             } catch (e: IOException) {
                 Log.e(TAG, "Could not close the client socket", e)
             }

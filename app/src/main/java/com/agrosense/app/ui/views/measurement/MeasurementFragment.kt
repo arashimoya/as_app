@@ -14,16 +14,25 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.agrosense.app.BluetoothActivity
 import com.agrosense.app.R
+import com.agrosense.app.dsl.MeasurementRepo
+import com.agrosense.app.dsl.MeasurementRepository
 import com.agrosense.app.dsl.db.AgroSenseDatabase
+import com.agrosense.app.rds.bluetooth.MeasurementManager
+import com.agrosense.app.timeprovider.CurrentTimeProvider
 import com.agrosense.app.ui.views.main.NavFragment
 import com.agrosense.app.viewmodelfactory.MeasurementViewModelFactory
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
+
 
 class MeasurementFragment : Fragment() {
     private lateinit var measurementViewModel: MeasurementViewModel
+    private lateinit var measurementRepository: MeasurementRepo
+    private lateinit var measurementManager: MeasurementManager
 
     private lateinit var textView: TextView
     private lateinit var backButton: ImageView
+    private lateinit var fabStop: FloatingActionButton
 
     companion object {
         fun newInstance() = MeasurementFragment()
@@ -38,26 +47,31 @@ class MeasurementFragment : Fragment() {
                     AgroSenseDatabase.getDatabase(requireContext()).measurementDao()
                 )
             )[MeasurementViewModel::class.java]
+        measurementRepository = MeasurementRepository.getInstance(requireContext(), CurrentTimeProvider())
+        measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewLifecycleOwner.lifecycleScope.launch {
-            measurementViewModel.lastTemperatureReading.collect { reading ->
-                changeTextWithAnimation(textView, reading?.value?.toString() ?: "N/A")
-
-            }
-        }
         return inflater.inflate(R.layout.fragment_measurement, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         textView = view.findViewById(R.id.latest_temperature)
+        viewLifecycleOwner.lifecycleScope.launch {
+            measurementViewModel.lastTemperatureReading.collect { reading ->
+                changeTextWithAnimation(textView, reading?.value?.toString() ?: "N/A")
+            }
+        }
+
         backButton = view.findViewById(R.id.backButton)
         backButton.setOnClickListener { onBackPressed() }
+
+        fabStop = view.findViewById(R.id.stop_measurement)
+        fabStop.setOnClickListener{stopMeasurement()}
 
     }
 
@@ -76,6 +90,13 @@ class MeasurementFragment : Fragment() {
 
      private fun onBackPressed() {
          (requireActivity() as BluetoothActivity).replaceFragment(NavFragment.newInstance())
+    }
+
+    private fun stopMeasurement(){
+        measurementRepository.updateEndForAllMeasurements()
+        measurementManager.stop()
+        onBackPressed()
+
     }
 
 }

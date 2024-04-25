@@ -50,9 +50,8 @@ class DeviceAdapter(
     }
 
     fun updateDataSet(devices: List<BluetoothDevice>){
-        val oldData = data
-        data + devices
-        notifyItemRangeInserted(oldData.size-1, devices.size)
+        data = devices
+        notifyDataSetChanged()
     }
 
 

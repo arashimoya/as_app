@@ -21,11 +21,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.agrosense.app.dsl.db.AgroSenseDatabase.Companion.getDatabase
 import com.agrosense.app.rds.MessageHandler
 import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
 import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
 import com.agrosense.app.ui.views.devices.BluetoothDeviceViewModel
 import com.agrosense.app.ui.views.main.NavFragment
+import java.util.UUID
 
 
 val ALL_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -49,7 +51,7 @@ class BluetoothActivity : AppCompatActivity() {
 
     private lateinit var deviceViewModel: BluetoothDeviceViewModel
 
-    private val handler: Handler = MessageHandler(this)
+    private lateinit var handler: Handler
 
     private var bluetoothService: BluetoothConnectionService? = null
     private var isServiceBound: Boolean = false
@@ -59,6 +61,8 @@ class BluetoothActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth)
+        getDatabase(this)
+        handler = MessageHandler(this)
         if (savedInstanceState == null) {
             replaceFragment(NavFragment.newInstance())
         }
@@ -84,7 +88,7 @@ class BluetoothActivity : AppCompatActivity() {
 
         if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+            startActivityIfNeeded(enableBtIntent, REQUEST_ENABLE_BT)
         }
 
         bluetoothAdapter.startDiscovery()
@@ -111,9 +115,23 @@ class BluetoothActivity : AppCompatActivity() {
 
             when (intent?.action) {
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                    when ((intent.extras?.get(BluetoothDevice.EXTRA_DEVICE) as BluetoothDevice).bondState) {
+                    val device: BluetoothDevice? =
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val bondState =
+                        intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)
+
+                    when (bondState) {
                         BluetoothDevice.BOND_BONDED -> {
                             Log.d(TAG, "BroadcastReceiver: BOND_BONDED.")
+                            if (isServiceBound) {
+                                if (device != null) {
+                                    bluetoothService?.connect(
+                                        device.createInsecureRfcommSocketToServiceRecord(
+                                            MY_UUID
+                                        )
+                                    )
+                                }
+                            }
                         }
 
                         BluetoothDevice.BOND_BONDING -> Log.d(
@@ -175,19 +193,23 @@ class BluetoothActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     fun connectToDevice(device: BluetoothDevice) {
-        if (isServiceBound) {
-            bluetoothService?.connect(device)
-        }
+        device.createBond()
     }
 
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
     }
 
+    fun getCommunicationService(): BluetoothCommunicationService {
+        return bluetoothCommunicationService
+    }
+
 
     companion object {
         const val TAG: String = "BluetoothActivity"
+        private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     }
 }
 
