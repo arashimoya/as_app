@@ -2,9 +2,16 @@ package com.agrosense.app.monitoring
 
 import com.agrosense.app.domain.entity.TemperatureReading
 
-interface ThresholdNotifier {
+class ThresholdNotifier: IThresholdNotifier {
 
-    fun addListener(listener: ThresholdExceedanceListener)
 
-    fun notifyThresholdExceeded(reading: TemperatureReading)
+    private val listeners = mutableListOf<ThresholdExceedanceListener>()
+
+    override fun addListener(listener: ThresholdExceedanceListener) {
+        listeners.add(listener)
+    }
+
+    override fun notifyThresholdExceeded(reading: TemperatureReading) {
+        listeners.forEach { it.onThresholdExceeded(reading) }
+    }
 }

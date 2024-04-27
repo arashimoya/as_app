@@ -12,7 +12,7 @@ import org.mockito.kotlin.anyOrNull
 
 class ThresholdCheckerTest {
 
-     var notifier: ThresholdNotifier = mock()
+     var notifier: IThresholdNotifier = mock()
 
     @Test
     fun `test check method notifies notifier when max threshold exceeded`() {

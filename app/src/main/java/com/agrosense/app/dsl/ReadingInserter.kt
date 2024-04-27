@@ -12,7 +12,7 @@ import com.agrosense.app.mapper.Mapper
 import com.agrosense.app.mapper.ReadingMapper
 import com.agrosense.app.monitoring.ThresholdChecker
 import com.agrosense.app.monitoring.ThresholdExceedanceHandler
-import com.agrosense.app.monitoring.ConcreteThresholdNotifier
+import com.agrosense.app.monitoring.ThresholdNotifier
 import com.agrosense.app.monitoring.IThresholdChecker
 import com.agrosense.app.timeprovider.CurrentTimeProvider
 import kotlinx.coroutines.CoroutineScope
@@ -65,7 +65,7 @@ class ReadingInserter(
         const val TAG = "ReadingInserter"
         fun fromContext(context: Context): ReadingInserter {
             val db =  AgroSenseDatabase.getDatabase(context)
-            val notifier = ConcreteThresholdNotifier()
+            val notifier = ThresholdNotifier()
             notifier.addListener(ThresholdExceedanceHandler(context))
             val checker = ThresholdChecker(notifier)
             return ReadingInserter(

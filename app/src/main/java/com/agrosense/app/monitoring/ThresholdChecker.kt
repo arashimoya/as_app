@@ -3,7 +3,7 @@ package com.agrosense.app.monitoring
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
 
-class ThresholdChecker(private val notifier: ThresholdNotifier ) : IThresholdChecker {
+class ThresholdChecker(private val notifier: IThresholdNotifier ) : IThresholdChecker {
 
     override fun check(readings: List<TemperatureReading>, measurement: Measurement){
         readings.forEach {

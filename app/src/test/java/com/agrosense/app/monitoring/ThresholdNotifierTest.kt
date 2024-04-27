@@ -6,12 +6,12 @@ import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.verify
 
-class ConcreteThresholdNotifierTest{
+class ThresholdNotifierTest{
 
     @Test
     fun `test notifyThresholdExceeded notifies all listeners`() {
 
-        val notifier = ConcreteThresholdNotifier()
+        val notifier = ThresholdNotifier()
         val listener1: ThresholdExceedanceListener = mock()
         val listener2: ThresholdExceedanceListener = mock()
         notifier.addListener(listener1)
