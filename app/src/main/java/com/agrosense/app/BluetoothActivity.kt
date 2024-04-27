@@ -73,11 +73,7 @@ class BluetoothActivity : AppCompatActivity() {
         deviceViewModel = ViewModelProvider(this)[BluetoothDeviceViewModel::class.java]
 
 
-        val filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
-        registerReceiver(bondReceiver, filter)
-
-        val discoverFilter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-        registerReceiver(discoverReceiver, discoverFilter)
+        registerReceivers()
 
 
         if (!bluetoothAdapter.isEnabled) {
@@ -89,6 +85,14 @@ class BluetoothActivity : AppCompatActivity() {
 
         //testing
 //        testNotifications()
+    }
+
+    private fun registerReceivers() {
+        val filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        registerReceiver(bondReceiver, filter)
+
+        val discoverFilter = IntentFilter(BluetoothDevice.ACTION_FOUND)
+        registerReceiver(discoverReceiver, discoverFilter)
     }
 
     private fun testNotifications() {
