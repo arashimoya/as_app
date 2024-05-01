@@ -51,7 +51,7 @@ class BluetoothCommunicationService(private val handler: Handler) {
                 }
 
                 val readMsg = handler.obtainMessage(MESSAGE_WRITE, numBytes, -1, buffer)
-                readMsg.sendToTarget()
+                handler.handleMessage(readMsg)
             }
         }
 
