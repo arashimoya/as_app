@@ -78,6 +78,13 @@ class MeasurementListFragment : Fragment() {
         fab.setOnClickListener {
             openCreateDialog()
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            measurementListViewModel.isConnectedToIOT.collect { isConnected ->
+                fab.isEnabled = isConnected
+
+            }
+        }
     }
 
     private fun openCreateDialog() =
