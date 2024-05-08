@@ -75,6 +75,7 @@ class MeasurementListFragment : Fragment() {
         }
 
         fab = view.findViewById(R.id.fab_add_measurement)
+        fab.isEnabled = false
         fab.setOnClickListener {
             openCreateDialog()
         }
