@@ -6,10 +6,13 @@ class MeasurementManager(private val bluetoothService: BluetoothCommunicationSer
         bluetoothService.write(START.toByteArray())
     }
 
-    fun stop(){bluetoothService.write(STOP.toByteArray())}
+    fun stop() {
+        bluetoothService.write(STOP.toByteArray())
+        bluetoothService.stopConnection()
+    }
 
-    companion object{
-         const val START = "start"
+    companion object {
+        const val START = "start"
         const val STOP = "stop"
     }
 }
