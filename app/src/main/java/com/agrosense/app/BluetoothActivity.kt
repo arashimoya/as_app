@@ -32,7 +32,6 @@ import com.agrosense.app.rds.bluetooth.BluetoothCommunicationService
 import com.agrosense.app.rds.bluetooth.BluetoothConnectionService
 import com.agrosense.app.ui.views.devices.BluetoothDeviceViewModel
 import com.agrosense.app.ui.views.main.NavFragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.joda.time.DateTime
 import java.util.Timer
 import java.util.TimerTask
@@ -172,9 +171,6 @@ class BluetoothActivity : AppCompatActivity() {
                                             MY_UUID
                                         )
                                     )
-                                    if(bluetoothService?.isConnected() == true){
-                                        findViewById<FloatingActionButton>(R.id.fab_add_measurement).isEnabled = true
-                                    }
                                 }
                             }
                         }

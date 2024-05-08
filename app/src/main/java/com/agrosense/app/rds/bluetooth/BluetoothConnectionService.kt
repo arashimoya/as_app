@@ -33,20 +33,11 @@ class BluetoothConnectionService : Service() {
     fun connect(socket: BluetoothSocket) {
         connectThread?.cancel()
         connectThread = ConnectThread(socket).apply { start() }
-
     }
 
     @SuppressLint("MissingPermission")
     fun disconnect() {
         connectThread?.cancel()
-    }
-
-    fun isConnected(): Boolean {
-        return if(connectThread == null){
-            false
-        } else {
-            connectThread!!.isConnected()
-        }
     }
 
     @SuppressLint("MissingPermission")
@@ -60,9 +51,6 @@ class BluetoothConnectionService : Service() {
                 bluetoothCommunicationService.read(socket)
             }
         }
-
-        fun isConnected() = socket.isConnected
-
 
         fun cancel() {
             try {
