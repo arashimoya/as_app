@@ -70,7 +70,7 @@ class BluetoothCommunicationService(private val handler: Handler) {
             val writtenMsg = handler.obtainMessage(
                 MESSAGE_WRITE, -1, -1, buffer
             )
-            writtenMsg.sendToTarget()
+            handler.handleMessage(writtenMsg)
         }
 
         fun cancel(){
