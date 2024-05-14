@@ -1,14 +1,13 @@
 package com.agrosense.app.rds.bluetooth
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class BluetoothConnectionState private constructor() {
 
     private var isConnectedInternal = false
-    private val isConnectedStateFlow = MutableSharedFlow<Boolean>()
+    private val isConnectedStateFlow = MutableStateFlow(false)  // default initial value
 
     companion object {
         @Volatile
@@ -30,11 +29,8 @@ class BluetoothConnectionState private constructor() {
 
     private fun updateConnectionState(isConnected: Boolean) {
         isConnectedInternal = isConnected
-        isConnectedStateFlow.tryEmit(isConnected)
+        isConnectedStateFlow.value = isConnected  // Update the state
     }
 
-    fun isConnected(): Flow<Boolean> = flow {
-        emitAll(isConnectedStateFlow)
-        emit(isConnectedInternal)
-    }
+    fun isConnected(): Flow<Boolean> = isConnectedStateFlow.asStateFlow()
 }
