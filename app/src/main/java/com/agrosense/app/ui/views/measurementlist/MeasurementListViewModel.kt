@@ -8,4 +8,5 @@ import kotlinx.coroutines.flow.Flow
 class MeasurementListViewModel(measurementDao : MeasurementDao)  : ViewModel() {
 
     val measurements: Flow<List<Measurement>> = measurementDao.loadMeasurements()
+
 }

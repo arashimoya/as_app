@@ -14,7 +14,7 @@ import com.agrosense.app.R
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.dsl.db.AgroSenseDatabase
 import com.agrosense.app.ui.adapter.MeasurementsAdapter
-import com.agrosense.app.ui.views.linechart.LinechartFragment
+import com.agrosense.app.ui.views.linechart.LineChartFragment
 import com.agrosense.app.ui.views.measurement.MeasurementFragment
 import com.agrosense.app.viewmodelfactory.MeasurementListViewModelFactory
 import kotlinx.coroutines.launch
@@ -66,10 +66,11 @@ class MeasurementListFragment : Fragment() {
         if (measurement.end == null) {
             (requireActivity() as BluetoothActivity).replaceFragment(MeasurementFragment.newInstance())
         } else {
-//            val args = Bundle()
-//            measurement.measurementId?.let { args.putLong(measurementKey, it) }
-//            fragment.arguments = args
-           (requireActivity() as BluetoothActivity).replaceFragment(LinechartFragment.newInstance())
+            val args = Bundle()
+            measurement.measurementId?.let { args.putLong(measurementKey, it) }
+            val fragment = LineChartFragment.newInstance()
+            fragment.arguments = args
+           (requireActivity() as BluetoothActivity).replaceFragment(fragment)
         }
     }
 
