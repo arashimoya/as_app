@@ -41,13 +41,13 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+private const val READINGS_PER_PAGE = 100
 
-private const val READINGS_PER_PAGE = 50
 class LineChartFragment : Fragment() {
 
     private lateinit var lineChart: LineChart
     private lateinit var exportButton: Button
-
+    private val decimalFormat = DecimalFormat("0.00") // 初始化 decimalFormat
 
     private val lineChartViewModel: LineChartViewModel by viewModels {
         LineChartViewModelFactory(AgroSenseDatabase.getDatabase(requireContext()).measurementDao())
@@ -96,7 +96,6 @@ class LineChartFragment : Fragment() {
         }
     }
 
-
     private fun observeTemperatureReadings() {
         viewLifecycleOwner.lifecycleScope.launch {
             lineChartViewModel.temperatureReading.collect { temperatureReadings ->
@@ -106,10 +105,7 @@ class LineChartFragment : Fragment() {
                     // 将时间戳转换为相对于第一个数据点的时间偏移量，并将单位转换为小时
                     val offsetXAxis = (reading.recordedAt.toDate().time - referenceTime) / (1000 * 60 * 60).toFloat()
                     Entry(offsetXAxis, reading.value.toFloat())
-
-
                 }
-
 
                 val dataSet = LineDataSet(entries, "Temperature")
                 dataSet.color = ContextCompat.getColor(requireContext(), R.color.black)
@@ -205,8 +201,7 @@ class LineChartFragment : Fragment() {
 
                 // 添加温度和时间数据到表格中
                 val readingsToDraw = temperatureReadings.subList(totalReadings, minOf(totalReadings + READINGS_PER_PAGE, temperatureReadings.size))
-                totalReadings += readingsToDraw.size
-                drawTemperatureData(canvas, readingsToDraw)
+                totalReadings += drawTemperatureData(canvas, readingsToDraw)
 
                 pdfDocument.finishPage(page)
             }
@@ -221,16 +216,31 @@ class LineChartFragment : Fragment() {
             Toast.makeText(context, "Failed to save PDF", Toast.LENGTH_SHORT).show()
         }
     }
-    private val decimalFormat = DecimalFormat("0.00")
 
-    private fun drawTemperatureData(canvas: Canvas, temperatureReadings: List<TemperatureReading>) {
+    private fun drawTemperatureData(canvas: Canvas, temperatureReadings: List<TemperatureReading>): Int {
         var yPosition = 120f
-        temperatureReadings.forEach { reading ->
-            val temperature = decimalFormat.format(reading.value) // 格式化温度数据
-            canvas.drawText(reading.recordedAt.toString(), 50f, yPosition, Paint())
-            canvas.drawText("$temperature℃", 300f, yPosition, Paint())
-            yPosition += 30f
+        val paint = Paint().apply {
+            textSize = 16f
         }
+
+        var drawnReadingsCount = 0
+
+        for (reading in temperatureReadings) {
+            val temperature = decimalFormat.format(reading.value) // 格式化温度数据
+            canvas.drawText(reading.recordedAt.toString(), 50f, yPosition, paint)
+            canvas.drawText("$temperature℃", 300f, yPosition, paint)
+            yPosition += 30f
+
+            drawnReadingsCount++
+
+            // 检查是否超出页面的绘制范围
+            if (yPosition > 750f) {
+                // 如果超出页面范围，返回已经绘制的条目数
+                break
+            }
+        }
+
+        return drawnReadingsCount
     }
 
     override fun onRequestPermissionsResult(
