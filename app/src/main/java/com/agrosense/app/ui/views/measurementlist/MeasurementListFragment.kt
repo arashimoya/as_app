@@ -102,10 +102,11 @@ class MeasurementListFragment : Fragment() {
         if (measurement.end == null) {
             openNotFinishedView()
         } else {
-//            val args = Bundle()
-//            measurement.measurementId?.let { args.putLong(measurementKey, it) }
-//            fragment.arguments = args
-           (requireActivity() as BluetoothActivity).replaceFragment(LinechartFragment.newInstance())
+            val args = Bundle()
+            measurement.measurementId?.let { args.putLong(measurementKey, it) }
+            val fragment = LineChartFragment.newInstance()
+            fragment.arguments = args
+           (requireActivity() as BluetoothActivity).replaceFragment(fragment)
         }
     }
 
