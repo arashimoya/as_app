@@ -29,6 +29,9 @@ class MessageHandler(context: Context) : Handler() {
             }
 
             MESSAGE_WRITE -> {
+                val bytes = msg.obj as ByteArray
+                val writeMsg = String(bytes, 0, msg.arg1)
+                Log.i(TAG, "Message write: $writeMsg")
             }
 
             MESSAGE_TOAST -> {

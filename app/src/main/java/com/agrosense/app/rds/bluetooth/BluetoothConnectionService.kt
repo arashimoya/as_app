@@ -48,13 +48,17 @@ class BluetoothConnectionService : Service() {
 
             socket.let { socket ->
                 socket.connect()
+                BluetoothConnectionState.getInstance().setConnected()
                 bluetoothCommunicationService.read(socket)
             }
+
+
         }
 
         fun cancel() {
             try {
                 socket.close()
+                BluetoothConnectionState.getInstance().setDisconnected()
             } catch (e: IOException) {
                 Log.e(TAG, "Could not close the client socket", e)
             }

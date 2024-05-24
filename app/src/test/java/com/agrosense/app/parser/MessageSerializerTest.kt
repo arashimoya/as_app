@@ -109,6 +109,17 @@ class MessageSerializerTest {
         assertEquals(listOf(TemperatureMessage(28.5, 1234)),result)
     }
 
+    @Test
+    fun should_parse_a_zeroed_message(){
+        val message = ZERO
+
+        val result = serializer.process(message)
+
+        assertFalse(result.isEmpty())
+        assertEquals(1,result.size)
+        assertEquals(listOf(TemperatureMessage(0.0, 0)),result)
+    }
+
     companion object {
         private const val NOW: Long = 1711808586
         private const val TEMPERATURE: Double = 28.5
@@ -127,6 +138,7 @@ class MessageSerializerTest {
 
         private const val SHORTER = "{28.5, 1234}"
 
+        private const val ZERO = "{0.00,0}}"
 
     }
 }

@@ -5,13 +5,12 @@ import com.agrosense.app.domain.message.TemperatureMessage
 class MessageSerializer {
 
 
-
     private val buffer: StringBuilder = StringBuilder()
 
     fun process(message: String): List<TemperatureMessage> {
         buffer.append(message.trim())
         val list = findCompleteMessages()
-        return list.map {parse(it) }
+        return list.map { parse(it) }
     }
 
     private fun findCompleteMessages(): MutableList<String> {
@@ -31,18 +30,25 @@ class MessageSerializer {
     }
 
     private fun parse(message: String): TemperatureMessage {
-        val temperature = message.substring(TEMPERATURE_START, TEMPERATURE_END).toDouble()
-        val timestamp = message.substring(TIMESTAMP_START, message.indexOf(END_BRACKET)).toLong()
-        return TemperatureMessage(temperature, timestamp)
+        return TemperatureMessage(
+            parseTemperature(message),
+            parseTimestamp(message)
+        )
     }
+
+    private fun parseTimestamp(message: String) =
+        message.substring(message.indexOf(COMMA) + 1, message.indexOf(END_BRACKET)).trim()
+            .toLong()
+
+    private fun parseTemperature(message: String) =
+        message.substring(message.indexOf(START_BRACKET) + 1, message.indexOf(COMMA)).trim()
+            .toDouble()
 
 
     companion object {
+        private const val COMMA = ","
         private const val START_BRACKET = "{"
         private const val END_BRACKET = "}"
-        private const val TEMPERATURE_START = 1
-        private const val TEMPERATURE_END = 5
-        private const val TIMESTAMP_START = 7
     }
 
 }

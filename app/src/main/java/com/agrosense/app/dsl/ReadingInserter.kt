@@ -10,6 +10,10 @@ import com.agrosense.app.dsl.dao.ReadingDao
 import com.agrosense.app.dsl.db.AgroSenseDatabase
 import com.agrosense.app.mapper.Mapper
 import com.agrosense.app.mapper.ReadingMapper
+import com.agrosense.app.monitoring.ThresholdChecker
+import com.agrosense.app.monitoring.ThresholdExceedanceHandler
+import com.agrosense.app.monitoring.ThresholdNotifier
+import com.agrosense.app.monitoring.IThresholdChecker
 import com.agrosense.app.timeprovider.CurrentTimeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +22,8 @@ import kotlinx.coroutines.launch
 class ReadingInserter(
     private val mapper: Mapper<TemperatureMessage, TemperatureReading>,
     private val measurementDao: MeasurementDao?,
-    private val readingDao: ReadingDao?
+    private val readingDao: ReadingDao?,
+    private val thresholdChecker: IThresholdChecker
 ) {
 
 
@@ -26,9 +31,11 @@ class ReadingInserter(
         val measurementOpt = measurementDao?.loadLastNotFinishedMeasurement()
 
         measurementOpt?.let { measurement ->
+            val readings = map(messages, measurement)
+            thresholdChecker.check(readings, measurement)
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    readingDao?.insertTemperatureReadings(*map(messages, measurement))
+                    readingDao?.insertTemperatureReadings(*readings.toTypedArray())
                 } catch (e: Exception) {
                     logError("Error inserting temperature readings", e)
                 }
@@ -40,13 +47,13 @@ class ReadingInserter(
     private fun map(
         messages: List<TemperatureMessage>,
         measurement: Measurement
-    ): Array<TemperatureReading> {
+    ): List<TemperatureReading> {
         return messages.map {
             mapper.map(
                 it,
                 measurement.measurementId!!
             )
-        }.toTypedArray()
+        }
     }
 
     private fun logError(msg: String, e: java.lang.Exception? = null) {
@@ -58,10 +65,14 @@ class ReadingInserter(
         const val TAG = "ReadingInserter"
         fun fromContext(context: Context): ReadingInserter {
             val db =  AgroSenseDatabase.getDatabase(context)
+            val notifier = ThresholdNotifier()
+            notifier.addListener(ThresholdExceedanceHandler(context))
+            val checker = ThresholdChecker(notifier)
             return ReadingInserter(
                 ReadingMapper(CurrentTimeProvider()),
                 db.measurementDao(),
-                db.readingDao()
+                db.readingDao(),
+                checker
             )
         }
     }

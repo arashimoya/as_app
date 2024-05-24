@@ -32,7 +32,7 @@ interface MeasurementDao {
     @Query("SELECT * from reading order by recordedAt DESC LIMIT 1")
     fun loadLastReadingForMeasurement(): Flow<TemperatureReading?>
 
-    @Query("SELECT * from measurement where `end` = null LIMIT 1")
+    @Query("SELECT * from measurement where `end` is null LIMIT 1")
     fun loadLastNotFinishedMeasurement(): Measurement?
 
     @Query("UPDATE measurement SET `end` = :dateTime WHERE `end` is null")
