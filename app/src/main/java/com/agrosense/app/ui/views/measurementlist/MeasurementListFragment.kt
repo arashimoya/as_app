@@ -20,7 +20,7 @@ import com.agrosense.app.timeprovider.CurrentTimeProvider
 import com.agrosense.app.timeprovider.TimeProvider
 import com.agrosense.app.ui.adapter.MeasurementsAdapter
 import com.agrosense.app.ui.views.dialog.insertmeasurement.InsertNewMeasurementDialog
-import com.agrosense.app.ui.views.linechart.LinechartFragment
+import com.agrosense.app.ui.views.linechart.LineChartFragment
 import com.agrosense.app.ui.views.measurement.MeasurementFragment
 import com.agrosense.app.viewmodelfactory.MeasurementListViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
