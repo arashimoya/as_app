@@ -48,7 +48,7 @@ class MeasurementFragment : Fragment() {
                 )
             )[MeasurementViewModel::class.java]
         measurementRepository = MeasurementRepository.getInstance(requireContext(), CurrentTimeProvider())
-        measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
+        measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService()!!)
     }
 
     override fun onCreateView(

@@ -16,7 +16,7 @@ class BluetoothConnectionService : Service() {
     private val binder = LocalBinder()
     private var connectThread: ConnectThread? = null
     private lateinit var bluetoothAdapter: BluetoothAdapter
-    private lateinit var bluetoothCommunicationService: BluetoothCommunicationService
+    lateinit var bluetoothCommunicationService: BluetoothCommunicationService
 
     inner class LocalBinder : Binder() {
         fun getService(): BluetoothConnectionService = this@BluetoothConnectionService

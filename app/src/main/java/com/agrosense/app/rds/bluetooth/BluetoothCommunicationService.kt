@@ -27,7 +27,7 @@ class BluetoothCommunicationService(private val handler: Handler) {
     }
 
     fun write(data: ByteArray) {
-        connectedThread?.write(data)
+        connectedThread!!.write(data)
     }
 
     fun stopConnection() {
@@ -50,7 +50,7 @@ class BluetoothCommunicationService(private val handler: Handler) {
                     break
                 }
 
-                val readMsg = handler.obtainMessage(MESSAGE_WRITE, numBytes, -1, buffer)
+                val readMsg = handler.obtainMessage(MESSAGE_READ, numBytes, -1, buffer)
                 handler.handleMessage(readMsg)
             }
         }

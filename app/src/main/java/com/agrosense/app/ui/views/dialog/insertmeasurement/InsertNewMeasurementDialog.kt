@@ -34,7 +34,7 @@ class InsertNewMeasurementDialog: DialogFragment() {
 
             timeProvider = CurrentTimeProvider()
             measurementRepository = MeasurementRepository.getInstance(requireContext(), timeProvider)
-            measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
+            measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService()!!)
             val builder = AlertDialog.Builder(it)
             val inflater = it.layoutInflater
 
