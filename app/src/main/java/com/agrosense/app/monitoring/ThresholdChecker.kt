@@ -3,11 +3,11 @@ package com.agrosense.app.monitoring
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
 
-class ThresholdChecker(private val notifier: IThresholdNotifier ) : IThresholdChecker {
+class ThresholdChecker(private val notifier: IThresholdNotifier) : IThresholdChecker {
 
-    override fun check(readings: List<TemperatureReading>, measurement: Measurement){
+    override fun check(readings: List<TemperatureReading>, measurement: Measurement) {
         readings.forEach {
-            if( maxExceeded(measurement, it) || minExceeded(measurement, it)){
+            if (maxExceeded(measurement, it) || minExceeded(measurement, it)) {
                 notifier.notifyThresholdExceeded(it)
             }
         }
@@ -22,7 +22,5 @@ class ThresholdChecker(private val notifier: IThresholdNotifier ) : IThresholdCh
         measurement: Measurement,
         it: TemperatureReading,
     ) = measurement.maxValue != null && it.value > measurement.maxValue
-
-    companion object
 
 }

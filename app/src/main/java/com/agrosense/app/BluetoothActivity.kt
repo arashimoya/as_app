@@ -235,8 +235,8 @@ class BluetoothActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
     }
 
-    fun getCommunicationService(): BluetoothCommunicationService {
-        return bluetoothCommunicationService
+    fun getCommunicationService(): BluetoothCommunicationService? {
+        return bluetoothService?.bluetoothCommunicationService
     }
 
 
