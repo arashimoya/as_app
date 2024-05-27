@@ -68,7 +68,7 @@ class BluetoothCommunicationService(private val handler: Handler) {
             }
 
             val writtenMsg = handler.obtainMessage(
-                MESSAGE_WRITE, -1, -1, buffer
+                MESSAGE_WRITE, bytes.size, -1, buffer
             )
             handler.handleMessage(writtenMsg)
         }

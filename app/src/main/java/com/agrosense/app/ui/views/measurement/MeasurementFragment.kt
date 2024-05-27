@@ -63,7 +63,7 @@ class MeasurementFragment : Fragment() {
         textView = view.findViewById(R.id.latest_temperature)
         viewLifecycleOwner.lifecycleScope.launch {
             measurementViewModel.lastTemperatureReading.collect { reading ->
-                changeTextWithAnimation(textView, reading?.value?.toString() ?: "N/A")
+                changeTextWithAnimation(textView, reading?.value?.let { "%.1f".format(it) } ?: "N/A")
             }
         }
 

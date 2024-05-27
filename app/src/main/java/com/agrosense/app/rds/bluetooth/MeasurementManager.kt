@@ -12,7 +12,7 @@ class MeasurementManager(private val bluetoothService: BluetoothCommunicationSer
     }
 
     companion object {
-        const val START = "start"
-        const val STOP = "stop"
+        private const val START = "S"
+        private const val STOP = "P"
     }
 }
