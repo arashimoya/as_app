@@ -12,15 +12,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.agrosense.app.BluetoothActivity
 import com.agrosense.app.R
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
 import com.agrosense.app.dsl.db.AgroSenseDatabase
+import com.agrosense.app.ui.views.main.NavFragment
 import com.agrosense.app.ui.views.measurementlist.MeasurementListFragment.Companion.measurementKey
 import com.agrosense.app.viewmodelfactory.LineChartViewModelFactory
 import com.github.mikephil.charting.charts.LineChart
@@ -46,6 +49,8 @@ class LineChartFragment : Fragment() {
 
     private lateinit var lineChart: LineChart
     private lateinit var exportButton: Button
+    private lateinit var backButton: ImageView
+
     private val decimalFormat = DecimalFormat("0.00") // 初始化 decimalFormat
     private lateinit var measurement: Measurement
 
@@ -63,6 +68,12 @@ class LineChartFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_linechart_fragment1, container, false)
         lineChart = rootView.findViewById(R.id.lineChart)
         exportButton = rootView.findViewById(R.id.exportButton)
+        backButton = rootView.findViewById(R.id.backButton2)
+        backButton.setOnClickListener {
+            (requireActivity() as BluetoothActivity).replaceFragment(
+                NavFragment.newInstance()
+            )
+        }
         return rootView
     }
 
