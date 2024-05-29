@@ -20,6 +20,11 @@ data class Measurement(
         maxValue: Double?,
         minValue: Double?
     ): this(null, name, start, null, maxValue, minValue)
+
+    constructor(
+        name: String,
+        start: DateTime
+    ): this(null, name, start, null, null, null)
 }
 
 @Entity(tableName = "reading")
@@ -28,5 +33,11 @@ data class TemperatureReading(
     val value: Double,
     @ColumnInfo(name = "recordedAt") val recordedAt: DateTime,
     val measurementParentId: Long
-)
+){
+    constructor(
+        value: Double,
+        recordedAt: DateTime,
+        measurementId: Long
+    ): this(null, value, recordedAt, measurementId)
+}
 
