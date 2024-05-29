@@ -1,9 +1,7 @@
 package com.agrosense.app.dsl
 
-import android.content.Context
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.dsl.dao.MeasurementDao
-import com.agrosense.app.dsl.db.AgroSenseDatabase
 import com.agrosense.app.timeprovider.TimeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,10 +40,10 @@ class MeasurementRepository private constructor(
         private var instance: MeasurementRepo? = null
 
         @Synchronized
-        fun getInstance(context: Context, timeProvider: TimeProvider): MeasurementRepo {
+        fun getInstance(dao: MeasurementDao, timeProvider: TimeProvider): MeasurementRepo {
             if (instance == null) {
                 instance = MeasurementRepository(
-                    AgroSenseDatabase.getDatabase(context).measurementDao(),
+                    dao,
                     timeProvider
                 )
             }

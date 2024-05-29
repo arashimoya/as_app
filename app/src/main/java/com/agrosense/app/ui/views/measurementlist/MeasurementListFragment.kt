@@ -50,7 +50,9 @@ class MeasurementListFragment : Fragment() {
                 )
             )[MeasurementListViewModel::class.java]
         timeProvider = CurrentTimeProvider()
-        measurementRepository = MeasurementRepository.getInstance(requireContext(), timeProvider)
+        measurementRepository = MeasurementRepository.getInstance(
+            AgroSenseDatabase.getDatabase(requireContext()).measurementDao(), timeProvider
+        )
     }
 
     override fun onCreateView(
@@ -106,7 +108,7 @@ class MeasurementListFragment : Fragment() {
             measurement.measurementId?.let { args.putLong(measurementKey, it) }
             val fragment = LineChartFragment.newInstance()
             fragment.arguments = args
-           (requireActivity() as BluetoothActivity).replaceFragment(fragment)
+            (requireActivity() as BluetoothActivity).replaceFragment(fragment)
         }
     }
 

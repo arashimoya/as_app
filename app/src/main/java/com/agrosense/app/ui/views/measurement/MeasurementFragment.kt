@@ -47,8 +47,11 @@ class MeasurementFragment : Fragment() {
                     AgroSenseDatabase.getDatabase(requireContext()).measurementDao()
                 )
             )[MeasurementViewModel::class.java]
-        measurementRepository = MeasurementRepository.getInstance(requireContext(), CurrentTimeProvider())
-        measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
+        measurementRepository = MeasurementRepository.getInstance(
+            AgroSenseDatabase.getDatabase(requireContext()).measurementDao(), CurrentTimeProvider()
+        )
+        measurementManager =
+            MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
     }
 
     override fun onCreateView(
@@ -71,7 +74,7 @@ class MeasurementFragment : Fragment() {
         backButton.setOnClickListener { onBackPressed() }
 
         fabStop = view.findViewById(R.id.stop_measurement)
-        fabStop.setOnClickListener{stopMeasurement()}
+        fabStop.setOnClickListener { stopMeasurement() }
 
     }
 
@@ -88,11 +91,11 @@ class MeasurementFragment : Fragment() {
         fadeOut.start()
     }
 
-     private fun onBackPressed() {
-         (requireActivity() as BluetoothActivity).replaceFragment(NavFragment.newInstance())
+    private fun onBackPressed() {
+        (requireActivity() as BluetoothActivity).replaceFragment(NavFragment.newInstance())
     }
 
-    private fun stopMeasurement(){
+    private fun stopMeasurement() {
         measurementRepository.updateEndForAllMeasurements()
         measurementManager.stop()
         onBackPressed()

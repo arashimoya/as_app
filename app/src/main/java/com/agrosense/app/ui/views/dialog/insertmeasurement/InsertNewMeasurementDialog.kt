@@ -12,12 +12,13 @@ import com.agrosense.app.datautil.validator.NewMeasurementDataValidator
 import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.dsl.MeasurementRepo
 import com.agrosense.app.dsl.MeasurementRepository
+import com.agrosense.app.dsl.db.AgroSenseDatabase
 import com.agrosense.app.rds.bluetooth.MeasurementManager
 import com.agrosense.app.timeprovider.CurrentTimeProvider
 import com.agrosense.app.timeprovider.TimeProvider
 import com.agrosense.app.ui.views.measurement.MeasurementFragment
 
-class InsertNewMeasurementDialog: DialogFragment() {
+class InsertNewMeasurementDialog : DialogFragment() {
 
     private lateinit var floorText: EditText
     private lateinit var ceilingText: EditText
@@ -33,8 +34,11 @@ class InsertNewMeasurementDialog: DialogFragment() {
         return activity?.let {
 
             timeProvider = CurrentTimeProvider()
-            measurementRepository = MeasurementRepository.getInstance(requireContext(), timeProvider)
-            measurementManager = MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
+            measurementRepository = MeasurementRepository.getInstance(
+                AgroSenseDatabase.getDatabase(requireContext()).measurementDao(), timeProvider
+            )
+            measurementManager =
+                MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
             val builder = AlertDialog.Builder(it)
             val inflater = it.layoutInflater
 
