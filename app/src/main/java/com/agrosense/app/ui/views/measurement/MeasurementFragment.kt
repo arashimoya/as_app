@@ -51,7 +51,7 @@ class MeasurementFragment : Fragment() {
             AgroSenseDatabase.getDatabase(requireContext()).measurementDao(), CurrentTimeProvider()
         )
         measurementManager =
-            MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
+            MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService()!!)
     }
 
     override fun onCreateView(

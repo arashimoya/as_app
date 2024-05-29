@@ -20,8 +20,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.agrosense.app.R
+import com.agrosense.app.domain.entity.Measurement
 import com.agrosense.app.domain.entity.TemperatureReading
 import com.agrosense.app.dsl.db.AgroSenseDatabase
+import com.agrosense.app.ui.views.measurementlist.MeasurementListFragment.Companion.measurementKey
 import com.agrosense.app.viewmodelfactory.LineChartViewModelFactory
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
@@ -29,7 +31,6 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -48,6 +49,7 @@ class LineChartFragment : Fragment() {
     private lateinit var lineChart: LineChart
     private lateinit var exportButton: Button
     private val decimalFormat = DecimalFormat("0.00") // 初始化 decimalFormat
+    private lateinit var measurement: Measurement
 
     private val lineChartViewModel: LineChartViewModel by viewModels {
         LineChartViewModelFactory(AgroSenseDatabase.getDatabase(requireContext()).measurementDao())
@@ -56,6 +58,12 @@ class LineChartFragment : Fragment() {
     companion object {
         fun newInstance() = LineChartFragment()
         private const val REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 101
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+
+
     }
 
     override fun onCreateView(
@@ -71,25 +79,40 @@ class LineChartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        observeTemperatureReadings()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val measurementId = arguments?.getLong(measurementKey) ?: throw IllegalArgumentException("No ID Provided")
+            measurement = lineChartViewModel.getMeasurement(measurementId)
 
+            observeTemperatureReadings()
+            initExportButton()
+        }
+
+    }
+
+    private fun initExportButton() {
         exportButton.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
-                            requireContext(),
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) != PackageManager.PERMISSION_GRANTED
+                    requireContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
             ) {
                 requestPermissions(
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        REQUEST_CODE_WRITE_EXTERNAL_STORAGE
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    REQUEST_CODE_WRITE_EXTERNAL_STORAGE
                 )
             } else {
                 lifecycleScope.launch {
-                    val temperatureReadings = lineChartViewModel.temperatureReading.firstOrNull()
+                    val temperatureReadings =
+                        lineChartViewModel.getTemperatureReadings(measurement.measurementId!!)
+                            .firstOrNull()
                     if (temperatureReadings != null) {
                         exportDataToPdf(requireContext(), temperatureReadings)
                     } else {
-                        Toast.makeText(requireContext(), "No temperature readings available", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "No temperature readings available",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -98,76 +121,109 @@ class LineChartFragment : Fragment() {
 
     private fun observeTemperatureReadings() {
         viewLifecycleOwner.lifecycleScope.launch {
-            lineChartViewModel.temperatureReading.collect { temperatureReadings ->
-                // 获取第一个数据点的时间戳
-                val referenceTime = temperatureReadings.firstOrNull()?.recordedAt?.toDate()?.time ?: 0L
-                val entries = temperatureReadings.mapIndexed { _, reading ->
-                    // 将时间戳转换为相对于第一个数据点的时间偏移量，并将单位转换为小时
-                    val offsetXAxis = (reading.recordedAt.toDate().time - referenceTime) / (1000 * 60 * 60).toFloat()
-                    Entry(offsetXAxis, reading.value.toFloat())
+            lineChartViewModel.getTemperatureReadings(measurement.measurementId!!).collect { temperatureReadings ->
+                if(temperatureReadings.isNotEmpty()){
+                    updateChart(temperatureReadings)
                 }
-
-                val dataSet = LineDataSet(entries, "Temperature")
-                dataSet.color = ContextCompat.getColor(requireContext(), R.color.black)
-                val lineData = LineData(dataSet)
-
-                lineChart.data = lineData
-
-                // 设置X轴标签
-                val xAxis = lineChart.xAxis
-                xAxis.position = XAxis.XAxisPosition.TOP
-                xAxis.valueFormatter = object : IndexAxisValueFormatter() {
-                    override fun getFormattedValue(value: Float): String {
-                        // 返回与value相对应的标签，这里可以根据需要自定义
-                        return "${value.toInt()}H" // 例如，返回每个小时的时间
-                    }
-                }
-
-                val lowThreshold = LimitLine(20.34f, "Min Threshold")
-                lowThreshold.lineWidth = 2f
-                lowThreshold.lineColor = Color.BLUE
-                lowThreshold.textColor = Color.BLUE
-                lowThreshold.textSize = 12f
-
-                val highThreshold = LimitLine(21.43f, "Max Threshold")
-                highThreshold.lineWidth = 2f
-                highThreshold.lineColor = Color.RED
-                highThreshold.textColor = Color.RED
-                highThreshold.textSize = 12f
-
-                // 设置左侧Y轴标签
-                val leftYAxis = lineChart.axisLeft
-                leftYAxis.axisMinimum = 20.27f // 设置左侧 Y 轴最小值
-                leftYAxis.axisMaximum = 21.45f // 设置左侧 Y 轴最大值
-                leftYAxis.addLimitLine(lowThreshold)
-                leftYAxis.addLimitLine(highThreshold)
-                leftYAxis.valueFormatter = object : ValueFormatter() {
-                    override fun getFormattedValue(value: Float): String {
-                        // 返回与value相对应的标签，这里可以根据需要自定义
-                        return "%.2f℃".format(value)
-                    }
-                }
-
-                // 设置右侧Y轴标签
-                val rightYAxis = lineChart.axisRight
-                rightYAxis.axisMinimum = 20.27f // 设置右侧 Y 轴最小值
-                rightYAxis.axisMaximum = 21.45f // 设置右侧 Y 轴最大值
-                rightYAxis.addLimitLine(lowThreshold)
-                rightYAxis.addLimitLine(highThreshold)
-                rightYAxis.valueFormatter = object : ValueFormatter() {
-                    override fun getFormattedValue(value: Float): String {
-                        // 返回与value相对应的标签，这里可以根据需要自定义
-                        return "%.2f℃".format(value)
-                    }
-                }
-                leftYAxis.setDrawTopYLabelEntry(true)
-                rightYAxis.setDrawTopYLabelEntry(true)
-                dataSet.valueTextSize = 2f
-                dataSet.setValueTextColor(Color.BLACK)
-                dataSet.setDrawValues(true)
-                lineChart.invalidate()
             }
         }
+    }
+
+    private fun updateChart(temperatureReadings: List<TemperatureReading>){
+        val earliestTime = temperatureReadings.first().recordedAt.millis
+        val latestTime = temperatureReadings.last().recordedAt.millis
+        val entries = temperatureReadings.map {
+            val timeOffsetHours = (it.recordedAt.millis - earliestTime) / (1000 * 60 * 60).toFloat()
+            Entry(timeOffsetHours, it.value.toFloat())
+        }
+
+        val dataSet = LineDataSet(entries, measurement.name)
+        styleDataSet(dataSet)
+
+        val lineData = LineData(dataSet)
+        configureChart(lineData, temperatureReadings)
+        configureXAxis(earliestTime, latestTime )
+    }
+
+    private fun styleDataSet(dataSet: LineDataSet){
+        val primary = ContextCompat.getColor(requireContext(), R.color.primary)
+        dataSet.color = primary
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.accent)
+        dataSet.lineWidth = 2f
+        dataSet.setCircleColor(primary)
+        dataSet.fillColor = primary
+        dataSet.setDrawCircleHole(false)
+    }
+
+    private fun configureChart(lineData: LineData, readings: List<TemperatureReading>){
+        configureYAxis(readings, lineData)
+        configureZoom()
+
+        addThresholdLines()
+        lineChart.invalidate()
+    }
+
+    private fun configureZoom() {
+        lineChart.setTouchEnabled(true)
+        lineChart.setScaleEnabled(true)
+        lineChart.isScaleYEnabled = true
+        lineChart.isScaleXEnabled = true
+        lineChart.isDoubleTapToZoomEnabled = true
+
+        lineChart.setScaleMinima(0.25f, 0.25f)
+        lineChart.zoom(1f, 0.1f, 0f, 0f)
+
+    }
+
+    private fun configureYAxis(
+        readings: List<TemperatureReading>,
+        lineData: LineData
+    ) {
+        val yMin = readings.minBy { it.value }.value.toFloat()
+        val yMax = readings.maxBy { it.value }.value.toFloat()
+
+        lineChart.data = lineData
+        lineChart.axisLeft.axisMinimum = yMin - 1
+        lineChart.axisLeft.axisMaximum = yMax + 1
+    }
+
+    private fun addThresholdLines(){
+        lineChart.axisRight.isEnabled = false
+        measurement.minValue?.let { minValue ->
+            val lowerLimit = LimitLine(minValue.toFloat(), "Min Temp")
+            lowerLimit.lineColor = Color.BLUE
+            lowerLimit.lineWidth = 2f
+            lowerLimit.textColor = Color.BLUE
+            lowerLimit.textSize = 12f
+            lineChart.axisLeft.addLimitLine(lowerLimit)
+        }
+
+        measurement.maxValue?.let { maxValue ->
+            val upperLimit = LimitLine(maxValue.toFloat(), "Max Temp")
+            upperLimit.lineColor = Color.RED
+            upperLimit.lineWidth = 2f
+            upperLimit.textColor = Color.RED
+            upperLimit.textSize = 12f
+            lineChart.axisLeft.addLimitLine(upperLimit)
+        }
+    }
+
+    private fun configureXAxis( earliestTime: Long, latestTime: Long){
+        val xAxis = lineChart.xAxis
+        xAxis.position = XAxis.XAxisPosition.TOP
+        xAxis.setLabelCount(5, true)
+        xAxis.valueFormatter = object: ValueFormatter(){
+            private val dateFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+            override fun getFormattedValue(value: Float): String {
+                val dateValue = earliestTime + (value* 3600 * 1000).toLong()
+                return dateFormatter.format(Date(dateValue))
+            }
+        }
+
+        xAxis.axisMinimum = 0f  // This is correct, keep it as 0
+        val totalHours = ((latestTime - earliestTime) / (3600 * 1000.0)).toFloat()
+        xAxis.axisMaximum = totalHours
     }
 
     private fun exportDataToPdf(context: Context, temperatureReadings: List<TemperatureReading>) {

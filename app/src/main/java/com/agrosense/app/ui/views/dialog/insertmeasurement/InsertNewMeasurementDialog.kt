@@ -38,7 +38,7 @@ class InsertNewMeasurementDialog : DialogFragment() {
                 AgroSenseDatabase.getDatabase(requireContext()).measurementDao(), timeProvider
             )
             measurementManager =
-                MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService())
+                MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService()!!)
             val builder = AlertDialog.Builder(it)
             val inflater = it.layoutInflater
 

@@ -26,7 +26,7 @@ interface MeasurementDao {
     @Query("SELECT * FROM measurement ORDER BY `end`")
     fun loadMeasurements(): Flow<List<Measurement>>
 
-    @Query("SELECT * from reading WHERE measurementParentId = :measurementId")
+    @Query("SELECT * from reading WHERE measurementParentId = :measurementId ORDER BY recordedAt ASC")
     fun loadReadingsByMeasurement(measurementId: Long): Flow<List<TemperatureReading>>
 
     @Query("SELECT * from reading order by recordedAt DESC LIMIT 1")
@@ -37,5 +37,8 @@ interface MeasurementDao {
 
     @Query("UPDATE measurement SET `end` = :dateTime WHERE `end` is null")
     suspend fun updateAllMeasurementEndsToNow(dateTime: DateTime)
+
+    @Query("SELECT * from measurement WHERE measurementId = :measurementId")
+    suspend fun getMeasurement(measurementId: Long): Measurement
 
 }
