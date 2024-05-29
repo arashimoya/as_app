@@ -11,10 +11,12 @@ import com.agrosense.app.rds.bluetooth.MESSAGE_TOAST
 import com.agrosense.app.rds.bluetooth.MESSAGE_WRITE
 import com.agrosense.app.rds.parser.MessageSerializer
 
-class MessageHandler(context: Context) : Handler() {
+class MessageHandler(
+    context: Context, private val inserter: ReadingInserter = ReadingInserter.fromContext(context),
+    private val parser: MessageSerializer = MessageSerializer()
+) : Handler() {
     private val contextReference = context
-    private val inserter = ReadingInserter.fromContext(context)
-    private val parser = MessageSerializer()
+
 
     override fun handleMessage(msg: Message) {
         val context = contextReference
