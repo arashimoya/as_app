@@ -1,8 +1,6 @@
 package com.agrosense.app.ui.views.linechart
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -57,12 +55,10 @@ class LineChartFragment : Fragment() {
 
     companion object {
         fun newInstance() = LineChartFragment()
-        private const val REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 101
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val rootView = inflater.inflate(R.layout.fragment_linechart_fragment1, container, false)
         lineChart = rootView.findViewById(R.id.lineChart)
@@ -74,7 +70,8 @@ class LineChartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val measurementId = arguments?.getLong(measurementKey) ?: throw IllegalArgumentException("No ID Provided")
+            val measurementId = arguments?.getLong(measurementKey)
+                ?: throw IllegalArgumentException("No ID Provided")
             measurement = lineChartViewModel.getMeasurement(measurementId)
 
             observeTemperatureReadings()
@@ -85,45 +82,36 @@ class LineChartFragment : Fragment() {
 
     private fun initExportButton() {
         exportButton.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissions(
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    REQUEST_CODE_WRITE_EXTERNAL_STORAGE
-                )
+            launchExportProcess()
+        }
+    }
+
+    private fun launchExportProcess() {
+        lifecycleScope.launch {
+            val temperatureReadings =
+                lineChartViewModel.getTemperatureReadings(measurement.measurementId!!).firstOrNull()
+            if (temperatureReadings != null) {
+                exportDataToPdf(requireContext(), temperatureReadings)
             } else {
-                lifecycleScope.launch {
-                    val temperatureReadings =
-                        lineChartViewModel.getTemperatureReadings(measurement.measurementId!!)
-                            .firstOrNull()
-                    if (temperatureReadings != null) {
-                        exportDataToPdf(requireContext(), temperatureReadings)
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "No temperature readings available",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+                Toast.makeText(
+                    requireContext(), "No temperature readings available", Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
     private fun observeTemperatureReadings() {
         viewLifecycleOwner.lifecycleScope.launch {
-            lineChartViewModel.getTemperatureReadings(measurement.measurementId!!).collect { temperatureReadings ->
-                if(temperatureReadings.isNotEmpty()){
-                    updateChart(temperatureReadings)
+            lineChartViewModel.getTemperatureReadings(measurement.measurementId!!)
+                .collect { temperatureReadings ->
+                    if (temperatureReadings.isNotEmpty()) {
+                        updateChart(temperatureReadings)
+                    }
                 }
-            }
         }
     }
 
-    private fun updateChart(temperatureReadings: List<TemperatureReading>){
+    private fun updateChart(temperatureReadings: List<TemperatureReading>) {
         val earliestTime = temperatureReadings.first().recordedAt.millis
         val latestTime = temperatureReadings.last().recordedAt.millis
         val entries = temperatureReadings.map {
@@ -136,10 +124,10 @@ class LineChartFragment : Fragment() {
 
         val lineData = LineData(dataSet)
         configureChart(lineData, temperatureReadings)
-        configureXAxis(earliestTime, latestTime )
+        configureXAxis(earliestTime, latestTime)
     }
 
-    private fun styleDataSet(dataSet: LineDataSet){
+    private fun styleDataSet(dataSet: LineDataSet) {
         val primary = ContextCompat.getColor(requireContext(), R.color.primary)
         dataSet.color = primary
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.accent)
@@ -149,7 +137,7 @@ class LineChartFragment : Fragment() {
         dataSet.setDrawCircleHole(false)
     }
 
-    private fun configureChart(lineData: LineData, readings: List<TemperatureReading>){
+    private fun configureChart(lineData: LineData, readings: List<TemperatureReading>) {
         configureYAxis(readings, lineData)
         configureZoom()
 
@@ -170,8 +158,7 @@ class LineChartFragment : Fragment() {
     }
 
     private fun configureYAxis(
-        readings: List<TemperatureReading>,
-        lineData: LineData
+        readings: List<TemperatureReading>, lineData: LineData
     ) {
         val yMin = readings.minBy { it.value }.value.toFloat()
         val yMax = readings.maxBy { it.value }.value.toFloat()
@@ -181,7 +168,7 @@ class LineChartFragment : Fragment() {
         lineChart.axisLeft.axisMaximum = yMax + 1
     }
 
-    private fun addThresholdLines(){
+    private fun addThresholdLines() {
         lineChart.axisRight.isEnabled = false
         measurement.minValue?.let { minValue ->
             val lowerLimit = LimitLine(minValue.toFloat(), "Min Temp")
@@ -202,15 +189,15 @@ class LineChartFragment : Fragment() {
         }
     }
 
-    private fun configureXAxis( earliestTime: Long, latestTime: Long){
+    private fun configureXAxis(earliestTime: Long, latestTime: Long) {
         val xAxis = lineChart.xAxis
         xAxis.position = XAxis.XAxisPosition.TOP
         xAxis.setLabelCount(5, true)
-        xAxis.valueFormatter = object: ValueFormatter(){
+        xAxis.valueFormatter = object : ValueFormatter() {
             private val dateFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
 
             override fun getFormattedValue(value: Float): String {
-                val dateValue = earliestTime + (value* 3600 * 1000).toLong()
+                val dateValue = earliestTime + (value * 3600 * 1000).toLong()
                 return dateFormatter.format(Date(dateValue))
             }
         }
@@ -223,7 +210,9 @@ class LineChartFragment : Fragment() {
     private fun exportDataToPdf(context: Context, temperatureReadings: List<TemperatureReading>) {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val fileName = "temperature_readings_$timeStamp.pdf"
-        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName)
+        val file = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName
+        )
 
         try {
             val pdfDocument = PdfDocument()
@@ -231,7 +220,8 @@ class LineChartFragment : Fragment() {
 
             // 分页绘制数据
             while (totalReadings < temperatureReadings.size) {
-                val pageInfo = PdfDocument.PageInfo.Builder(600, 800, pdfDocument.pages.size + 1).create()
+                val pageInfo =
+                    PdfDocument.PageInfo.Builder(600, 800, pdfDocument.pages.size + 1).create()
                 val page = pdfDocument.startPage(pageInfo)
                 val canvas = page.canvas
 
@@ -239,7 +229,9 @@ class LineChartFragment : Fragment() {
                 val titlePaint = Paint().apply {
                     textSize = 24f
                 }
-                canvas.drawText("Temperature Readings", 80f, 50f, titlePaint)
+                canvas.drawText(
+                    "Temperature Readings for ${measurement.name}", 80f, 50f, titlePaint
+                )
 
                 // 添加表格标题
                 val tableTitlePaint = Paint().apply {
@@ -250,7 +242,10 @@ class LineChartFragment : Fragment() {
                 canvas.drawText("Temperature", 300f, 100f, tableTitlePaint)
 
                 // 添加温度和时间数据到表格中
-                val readingsToDraw = temperatureReadings.subList(totalReadings, minOf(totalReadings + READINGS_PER_PAGE, temperatureReadings.size))
+                val readingsToDraw = temperatureReadings.subList(
+                    totalReadings,
+                    minOf(totalReadings + READINGS_PER_PAGE, temperatureReadings.size)
+                )
                 totalReadings += drawTemperatureData(canvas, readingsToDraw)
 
                 pdfDocument.finishPage(page)
@@ -267,7 +262,9 @@ class LineChartFragment : Fragment() {
         }
     }
 
-    private fun drawTemperatureData(canvas: Canvas, temperatureReadings: List<TemperatureReading>): Int {
+    private fun drawTemperatureData(
+        canvas: Canvas, temperatureReadings: List<TemperatureReading>
+    ): Int {
         var yPosition = 120f
         val paint = Paint().apply {
             textSize = 16f
@@ -291,20 +288,5 @@ class LineChartFragment : Fragment() {
         }
 
         return drawnReadingsCount
-    }
-
-    override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_WRITE_EXTERNAL_STORAGE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Do nothing here, as exporting will be triggered on button click after permission is granted.
-            } else {
-                Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 }
