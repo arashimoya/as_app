@@ -215,7 +215,7 @@ class LineChartFragment : Fragment() {
             }
         }
 
-        xAxis.axisMinimum = 0f  // This is correct, keep it as 0
+        xAxis.axisMinimum = 0f
         val totalHours = ((latestTime - earliestTime) / (3600 * 1000.0)).toFloat()
         xAxis.axisMaximum = totalHours
     }
