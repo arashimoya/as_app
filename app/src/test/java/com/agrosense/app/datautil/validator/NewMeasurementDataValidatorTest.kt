@@ -5,14 +5,13 @@ import android.text.SpannableStringBuilder
 import android.widget.Button
 import android.widget.EditText
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.*
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(AndroidJUnit4::class)
-@Ignore("TODO fix it idk")
+
+@RunWith(RobolectricTestRunner::class)
 class NewMeasurementDataValidatorTest{
 
     private val validator = NewMeasurementDataValidator()
