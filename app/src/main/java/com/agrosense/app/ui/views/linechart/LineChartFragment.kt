@@ -60,12 +60,6 @@ class LineChartFragment : Fragment() {
         private const val REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 101
     }
 
-    override fun onCreate(savedInstanceState: Bundle?){
-        super.onCreate(savedInstanceState)
-
-
-    }
-
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?

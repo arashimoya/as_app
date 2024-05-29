@@ -13,11 +13,7 @@ import com.agrosense.app.BluetoothActivity
 import com.agrosense.app.R
 import com.agrosense.app.datautil.resolver.measurement.MeasurementDataSetResolver
 import com.agrosense.app.domain.entity.Measurement
-import com.agrosense.app.dsl.MeasurementRepo
-import com.agrosense.app.dsl.MeasurementRepository
 import com.agrosense.app.dsl.db.AgroSenseDatabase
-import com.agrosense.app.timeprovider.CurrentTimeProvider
-import com.agrosense.app.timeprovider.TimeProvider
 import com.agrosense.app.ui.adapter.MeasurementsAdapter
 import com.agrosense.app.ui.views.dialog.insertmeasurement.InsertNewMeasurementDialog
 import com.agrosense.app.ui.views.linechart.LineChartFragment
@@ -29,8 +25,6 @@ import kotlinx.coroutines.launch
 class MeasurementListFragment : Fragment() {
 
     private lateinit var measurementListViewModel: MeasurementListViewModel
-    private lateinit var timeProvider: TimeProvider
-    private lateinit var measurementRepository: MeasurementRepo
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var fab: FloatingActionButton
@@ -49,10 +43,7 @@ class MeasurementListFragment : Fragment() {
                     AgroSenseDatabase.getDatabase(requireContext()).measurementDao()
                 )
             )[MeasurementListViewModel::class.java]
-        timeProvider = CurrentTimeProvider()
-        measurementRepository = MeasurementRepository.getInstance(
-            AgroSenseDatabase.getDatabase(requireContext()).measurementDao(), timeProvider
-        )
+
     }
 
     override fun onCreateView(

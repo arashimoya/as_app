@@ -13,12 +13,6 @@ class MeasurementRepository private constructor(
     private val timeProvider: TimeProvider
 ) : MeasurementRepo {
 
-    override fun insertMeasurement(measurement: Measurement) {
-        CoroutineScope(Dispatchers.IO).launch {
-            measurementDao.insertMeasurements(measurement)
-        }
-    }
-
     override fun updateEndForAllMeasurements() {
         CoroutineScope(Dispatchers.IO).launch {
             measurementDao.updateAllMeasurementEndsToNow(timeProvider.now())

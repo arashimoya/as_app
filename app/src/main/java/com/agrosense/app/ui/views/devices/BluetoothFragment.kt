@@ -27,9 +27,6 @@ class BluetoothFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[BluetoothDeviceViewModel::class.java]
-
-
-
     }
 
     override fun onCreateView(

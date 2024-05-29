@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class BluetoothConnectionState private constructor() {
 
     private var isConnectedInternal = false
-    private val isConnectedStateFlow = MutableStateFlow(false)  // default initial value
+    private val isConnectedStateFlow = MutableStateFlow(false)
 
     companion object {
         @Volatile
@@ -29,7 +29,7 @@ class BluetoothConnectionState private constructor() {
 
     private fun updateConnectionState(isConnected: Boolean) {
         isConnectedInternal = isConnected
-        isConnectedStateFlow.value = isConnected  // Update the state
+        isConnectedStateFlow.value = isConnected
     }
 
     fun isConnected(): Flow<Boolean> = isConnectedStateFlow.asStateFlow()

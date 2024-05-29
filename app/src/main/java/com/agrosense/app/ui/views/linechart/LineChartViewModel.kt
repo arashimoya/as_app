@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class LineChartViewModel(val measurementDao: MeasurementDao) : ViewModel() {
+class LineChartViewModel(private val measurementDao: MeasurementDao) : ViewModel() {
 
     fun getTemperatureReadings(measurementId: Long): Flow<List<TemperatureReading>> =
         measurementDao.loadReadingsByMeasurement(measurementId)

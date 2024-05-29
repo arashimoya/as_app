@@ -22,13 +22,6 @@ class MeasurementRepositoryTest {
     private var repository = MeasurementRepository.getInstance(measurementDao, timeProvider)
 
     @Test
-    fun `should call dao to insert measurement`(): Unit = runTest {
-        val measurement = Measurement("name", now)
-        repository.insertMeasurement(measurement)
-        verify(measurementDao).insertMeasurements(measurement)
-    }
-
-    @Test
     fun `should call dao to update all measurements`() = runTest {
         `when`(timeProvider.now()).thenReturn(now)
         repository.updateEndForAllMeasurements()
