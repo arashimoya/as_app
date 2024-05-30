@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.agrosense.app.BluetoothActivity
 import com.agrosense.app.R
-import com.agrosense.app.dsl.MeasurementRepo
 import com.agrosense.app.dsl.MeasurementRepository
 import com.agrosense.app.dsl.db.AgroSenseDatabase
 import com.agrosense.app.rds.bluetooth.MeasurementManager
@@ -27,8 +26,6 @@ import kotlinx.coroutines.launch
 
 class MeasurementFragment : Fragment() {
     private lateinit var measurementViewModel: MeasurementViewModel
-    private lateinit var measurementRepository: MeasurementRepo
-    private lateinit var measurementManager: MeasurementManager
 
     private lateinit var textView: TextView
     private lateinit var backButton: ImageView
@@ -44,14 +41,15 @@ class MeasurementFragment : Fragment() {
             ViewModelProvider(
                 requireActivity(),
                 MeasurementViewModelFactory(
-                    AgroSenseDatabase.getDatabase(requireContext()).measurementDao()
+                    AgroSenseDatabase.getDatabase(requireContext()).measurementDao(),
+                    MeasurementRepository.getInstance(
+                        AgroSenseDatabase.getDatabase(requireContext()).measurementDao(),
+                        CurrentTimeProvider()
+                    ),
+                    MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService()!!)
                 )
             )[MeasurementViewModel::class.java]
-        measurementRepository = MeasurementRepository.getInstance(
-            AgroSenseDatabase.getDatabase(requireContext()).measurementDao(), CurrentTimeProvider()
-        )
-        measurementManager =
-            MeasurementManager((requireActivity() as BluetoothActivity).getCommunicationService()!!)
+
     }
 
     override fun onCreateView(
@@ -66,7 +64,9 @@ class MeasurementFragment : Fragment() {
         textView = view.findViewById(R.id.latest_temperature)
         viewLifecycleOwner.lifecycleScope.launch {
             measurementViewModel.lastTemperatureReading.collect { reading ->
-                changeTextWithAnimation(textView, reading?.value?.let { "%.1f".format(it) } ?: "N/A")
+                changeTextWithAnimation(
+                    textView,
+                    reading?.value?.let { "%.1f".format(it) } ?: "N/A")
             }
         }
 
@@ -96,10 +96,8 @@ class MeasurementFragment : Fragment() {
     }
 
     private fun stopMeasurement() {
-        measurementRepository.updateEndForAllMeasurements()
-        measurementManager.stop()
+        measurementViewModel.stopMeasurement()
         onBackPressed()
-
     }
 
 }
