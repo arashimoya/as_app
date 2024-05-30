@@ -1,7 +1,9 @@
 package com.agrosense.app.viewmodelfactory
 
 import androidx.lifecycle.ViewModel
+import com.agrosense.app.dsl.MeasurementRepo
 import com.agrosense.app.dsl.dao.MeasurementDao
+import com.agrosense.app.rds.bluetooth.MeasurementManager
 import com.agrosense.app.ui.views.measurement.MeasurementViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
@@ -10,21 +12,25 @@ import org.junit.Test
 import org.mockito.Mockito.mock
 
 
-class MeasurementViewModelFactoryTest{
+class MeasurementViewModelFactoryTest {
 
     private var measurementDao: MeasurementDao = mock(MeasurementDao::class.java)
+    private var measurementManager: MeasurementManager =
+        mock(MeasurementManager::class.java)
+    private var measurementRepository: MeasurementRepo = mock(MeasurementRepo::class.java)
 
     private lateinit var factory: MeasurementViewModelFactory
 
     @Before
     fun setUp() {
-        factory = MeasurementViewModelFactory(measurementDao)
+        factory =
+            MeasurementViewModelFactory(measurementDao, measurementRepository, measurementManager)
     }
 
     @Test
     fun `should create class of MeasurementViewModel type`() {
         val viewModel = factory.create(MeasurementViewModel::class.java)
-        assertEquals(MeasurementViewModel::class.java,viewModel::class.java )
+        assertEquals(MeasurementViewModel::class.java, viewModel::class.java)
     }
 
     @Test(expected = IllegalArgumentException::class)
